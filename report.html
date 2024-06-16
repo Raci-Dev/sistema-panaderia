@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	
+	<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reporte de Ventas</title>
+  <link rel="stylesheet" href="report.css">
+
+</head>
+
+<body>
+
+
+	<header>
+    <div class="header-container">
+      <h1>Reportes</h1>
+        <nav>
+          <ul>
+            <li><a href="index.html">Inicio</a></li>
+          </ul>
+        </nav>
+    </div>
+  </header>
+	
+
+	<main>
+    <div class="container">
+      <form id="reporte-form">
+        <label for="fecha-inicio">Fecha de Inicio:</label>
+        <input type="date" id="fecha-inicio" name="fecha-inicio" required>
+        <label for="fecha-fin">Fecha de Fin:</label>
+        <input type="date" id="fecha-fin" name="fecha-fin" required>
+        <button type="button" id="generar-reporte">Generar Reporte</button>
+      </form>
+      <div id="reporte-grid" class="grid">
+				<table id="reporte-tabla" class="reporte-tabla">
+					<thead>
+						<tr>
+							<th>Fecha</th>
+							<th>Producto</th>
+							<th>Precio</th>
+							<th>Cantidad</th>
+							<th>Total</th>
+						</tr>
+					</thead>
+					<tbody>
+
+					</tbody>
+				</table>
+				<div id="paginacion" class="paginacion"></div>
+      </div>
+			<div id="total-ventas"></div>
+    </div>
+  </main>
+
+
+  <footer>
+    <div class="footer-container">
+      <p>&copy; 2024 Panaderia</p>
+    </div>
+  </footer>
+
+
+  <script src="index.js"></script>
+
+
+</body>
+</html>

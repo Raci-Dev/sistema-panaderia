@@ -169,3 +169,95 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateCart();
 });
+
+
+
+
+
+
+document.getElementById('generar-reporte').addEventListener('click', function() {
+  const fechaInicio = document.getElementById('fecha-inicio').value;
+  const fechaFin = document.getElementById('fecha-fin').value;
+
+  if (fechaInicio && fechaFin) {
+      generarReporte(fechaInicio, fechaFin);
+  } else {
+      alert('Por favor, seleccione un rango de fechas.');
+  }
+});
+
+const rowsPerPage = 3;
+let currentPage = 1;
+let currentRows = [];
+
+function generarReporte(fechaInicio, fechaFin) {
+  const sales = JSON.parse(localStorage.getItem('sales')) || [];
+  const filteredSales = sales.filter(sale => {
+    const saleDate = new Date(sale.date);
+    return saleDate >= new Date(fechaInicio) && saleDate <= new Date(fechaFin);
+  });
+
+  if (filteredSales.length === 0) {
+    document.querySelector('#reporte-tabla tbody').innerHTML = '<tr><td colspan="5">No hay ventas en el rango de fechas seleccionado.</td></tr>';
+    document.getElementById('total-ventas').innerHTML = '';
+		document.getElementById('paginacion').innerHTML = '';
+    return;
+  }
+
+  let totalVentas = 0;
+  const rows = [];
+
+  filteredSales.forEach(sale => {
+    sale.items.forEach(item => {
+      const total = item.price * item.quantity;
+      totalVentas += total;
+      rows.push(`
+        <tr>
+          <td>${new Date(sale.date).toLocaleDateString()}</td>
+          <td>${item.name}</td>
+          <td>$${item.price.toFixed(2)}</td>
+          <td>${item.quantity}</td>
+          <td>$${total.toFixed(2)}</td>
+        </tr>
+      `);
+    });
+  });
+
+	currentRows = rows;
+  currentPage = 1; // Reset to first page when new report is generated
+  renderTable(rows);
+  renderPagination(rows.length);
+
+  const totalVentasDiv = document.getElementById('total-ventas');
+  totalVentasDiv.innerHTML = `<strong>Total Ventas: $${totalVentas.toFixed(2)}</strong>`;
+}
+
+function renderTable(rows) {
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const paginatedRows = currentRows.slice(startIndex, endIndex).join('');
+
+  document.querySelector('#reporte-tabla tbody').innerHTML = paginatedRows;
+}
+
+function renderPagination() {
+  const pageCount = Math.ceil(currentRows.length / rowsPerPage);
+  const paginacionDiv = document.getElementById('paginacion');
+  paginacionDiv.innerHTML = '';
+
+  for (let i = 1; i <= pageCount; i++) {
+    const button = document.createElement('button');
+    button.textContent = i;
+    button.classList.add('pagination-button');
+    if (i === currentPage) {
+      button.classList.add('active');
+    }
+    button.addEventListener('click', () => {
+      currentPage = i;
+      renderTable();
+      document.querySelectorAll('.pagination-button').forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+    });
+    paginacionDiv.appendChild(button);
+  }
+}

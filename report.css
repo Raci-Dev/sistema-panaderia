@@ -1,0 +1,205 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #232628;
+}
+
+header {
+  background-color: #E15002;
+  color: white;
+  padding: 10px 20px;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+header h1 {
+  margin: 0;
+}
+
+header nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+header nav a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+header nav a:hover {
+  color: #adb5bd;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1200px;
+  width: 100%;
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  color: #343a40;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+form label, form input, form button {
+  width: 100%;
+  margin: 10px 0;
+}
+
+form input, form button {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+form button {
+  background-color: #E15002;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+form button:hover {
+  background-color: #c5642f;
+}
+
+.grid {
+  display: grid;
+  gap: 20px;
+}
+
+/* Estilos para la tabla del reporte */
+.reporte-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  display: block;
+}
+
+.reporte-tabla th, .reporte-tabla td {
+  border: 1px solid #dee2e6;
+  padding: 8px;
+  text-align: left;
+}
+
+.reporte-tabla th {
+  background-color: #f8f9fa;
+}
+
+/* Estilos para la paginación */
+.paginacion {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.paginacion button {
+  margin: 0 5px;
+  padding: 8px 16px;
+  border: none;
+  background-color: #E15002;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.paginacion button:hover {
+  background-color: #c5642f;
+}
+
+.paginacion button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.paginacion button.active {
+  background-color: #c5642f;
+}
+
+#total-ventas {
+  text-align: center;
+  font-size: 1.2em;
+  margin-top: 20px;
+}
+
+footer {
+  background-color: #E15002;
+  color: white;
+  text-align: center;
+  padding: 10px 20px;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 400px) {
+  form label, form input, form button {
+      width: 100%;
+  }
+}
+
+@media (min-width: 700px) {
+  form label, form input {
+      width: 48%;
+  }
+  form button {
+      width: 100%;
+  }
+}
+
+@media (min-width: 900px) {
+  form button {
+      width: 30%;
+      align-self: center;
+  }
+}
+
+@media (min-width: 1200px) {
+  .grid {
+      grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1400px) {
+  .grid {
+      grid-template-columns: repeat(3, 1fr);
+  }
+}
