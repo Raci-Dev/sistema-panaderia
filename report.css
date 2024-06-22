@@ -1,3 +1,4 @@
+/* General styles */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -10,12 +11,14 @@ body {
   flex-direction: column;
   min-height: 100vh;
   background-color: #232628;
+  color: #f8f9fa;
 }
 
+/* Header styles */
 header {
   background-color: #E15002;
   color: white;
-  padding: 10px 20px;
+  padding: 15px 20px;
 }
 
 .header-container {
@@ -28,6 +31,7 @@ header {
 
 header h1 {
   margin: 0;
+  font-size: 1.5em;
 }
 
 header nav ul {
@@ -46,118 +50,216 @@ header nav a:hover {
   color: #adb5bd;
 }
 
+/* Main content styles */
 main {
-  flex: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   padding: 20px;
+  flex-grow: 1;
 }
 
 .container {
-  max-width: 1200px;
   width: 100%;
-  background-color: white;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  margin: 0 auto;
+ /* padding: 20px;*/
+  color: #232628;
 }
 
-h2 {
-  margin-bottom: 20px;
-  text-align: center;
-  color: #343a40;
-}
-
-form {
+/* Form styles */
+.form-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  gap: 10px;
   margin-bottom: 20px;
 }
 
-form label, form input, form button {
-  width: 100%;
-  margin: 10px 0;
+.form-container label {
+  flex: 1 1 100%;
+  margin-bottom: 5px;
+  color: #fff;
 }
 
-form input, form button {
+.form-container input, 
+.form-container button {
+  flex: 1 1 calc(33.333% - 10px);
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  margin-bottom: 10px;
 }
 
-form button {
+.form-container button {
   background-color: #E15002;
   color: white;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-form button:hover {
+.form-container button:hover {
   background-color: #c5642f;
 }
 
-.grid {
-  display: grid;
-  gap: 20px;
-}
-
-/* Estilos para la tabla del reporte */
-.reporte-tabla {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-  overflow-x: auto;
-  display: block;
-}
-
-.reporte-tabla th, .reporte-tabla td {
-  border: 1px solid #dee2e6;
-  padding: 8px;
-  text-align: left;
-}
-
-.reporte-tabla th {
-  background-color: #f8f9fa;
-}
-
-/* Estilos para la paginación */
-.paginacion {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.paginacion button {
-  margin: 0 5px;
-  padding: 8px 16px;
-  border: none;
+#generar-reporte {
+  flex: 1 1 100%;
   background-color: #E15002;
   color: #fff;
+  border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.paginacion button:hover {
+#generar-reporte:hover {
   background-color: #c5642f;
 }
 
-.paginacion button:disabled {
+#generar-reporte:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.paginacion button.active {
+/* Table styles */
+.table-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow-x: auto; /* Enables horizontal scroll */
+  width: 100%;
+  min-height: 300px;
+}
+
+.reporte-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.reporte-tabla th {
+  border: 1px solid #c5642f;
+  padding: 12px;
+  text-align: left;
+  word-wrap: break-word; /* Allows text to wrap within cells */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #fff;
+}
+
+.reporte-tabla th {
+  background-color: #E15002;
+}
+
+.reporte-tabla td {
+  overflow: hidden; /* Ensures the text-overflow works */
+  text-overflow: ellipsis; /* Adds ellipsis for long text */ /* Adjust as needed */
+  white-space: nowrap; /* Prevents text from wrapping */
+}
+
+.pagination {
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+  border-radius: 0.25rem;
+  margin-top: 20px;
+}
+
+.page-item {
+  margin: 0 2px;
+}
+
+.page-item .page-link {
+  position: relative;
+  display: block;
+  padding: 0.5rem 0.75rem;
+  margin-left: -1px;
+  line-height: 1.25;
+  color: #000;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  text-decoration: none;
+}
+
+.page-item.disabled .page-link {
+  color: #6c757d;
+  pointer-events: none;
+  background-color: #fff;
+  border: #dee2e6;
+}
+
+.page-item.active .page-link {
+  z-index: 1;
+  color: #fff;
+  background-color: #E15002;
+  border-color: #E15002;
+}
+
+.page-item .page-link:hover {
+  color: #fff;
   background-color: #c5642f;
+  border-color: #E15002;
 }
 
 #total-ventas {
   text-align: center;
   font-size: 1.2em;
   margin-top: 20px;
+  color: #fff;
 }
 
+
+/* Responsive adjustments */
+
+/* For screens with a maximum width of 700px */
+@media (max-width: 700px) {
+  .reporte-tabla th, 
+  .reporte-tabla td {
+    padding: 8px;
+  }
+
+  .pagination .page-link{
+    padding: 0.4rem 0.6rem;
+  }
+}
+
+/* For screens with a maximum width of 400px */
+@media (max-width: 400px) {
+  .reporte-tabla th, 
+  .reporte-tabla td {
+    padding: 6px;
+    font-size: 14px; /* Smaller font size for smaller screens */
+  }
+
+  .pagination .page-link {
+    padding: 0.3rem 0.5rem;
+    font-size: 14px; /* Smaller font size for pagination buttons */
+  }
+
+  #total-ventas {
+    font-size: 1em;
+  }
+}
+
+/* For screens with a maximum width of 300px */
+@media (max-width: 300px) {
+  .reporte-tabla th, 
+  .reporte-tabla td {
+    padding: 4px;
+    font-size: 12px; /* Even smaller font size for very small screens */
+  }
+
+  .pagination .page-link {
+    padding: 0.2rem 0.4rem;
+    font-size: 12px; /* Smaller font size for pagination buttons */
+  }
+
+  #total-ventas {
+    font-size: 0.9em;
+  }
+}
+
+/* Footer styles */
 footer {
   background-color: #E15002;
   color: white;
@@ -170,36 +272,34 @@ footer {
   margin: 0 auto;
 }
 
+/* Responsive styles */
 @media (min-width: 400px) {
-  form label, form input, form button {
-      width: 100%;
+  .form-container label, 
+  .form-container input, 
+  .form-container button {
+    width: 100%;
   }
 }
 
 @media (min-width: 700px) {
-  form label, form input {
-      width: 48%;
+  .form-container label, 
+  .form-container input {
+    width: 48%;
   }
-  form button {
-      width: 100%;
+  .form-container button {
+    width: 100%;
   }
 }
 
 @media (min-width: 900px) {
-  form button {
-      width: 30%;
-      align-self: center;
+  .form-container button {
+    width: 30%;
+    align-self: center;
   }
 }
 
 @media (min-width: 1200px) {
-  .grid {
-      grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1400px) {
-  .grid {
-      grid-template-columns: repeat(3, 1fr);
+  .table-container {
+    max-width: 1200px;
   }
 }

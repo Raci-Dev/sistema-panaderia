@@ -174,19 +174,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
 document.getElementById('generar-reporte').addEventListener('click', function() {
   const fechaInicio = document.getElementById('fecha-inicio').value;
   const fechaFin = document.getElementById('fecha-fin').value;
 
-  if (fechaInicio && fechaFin) {
-      generarReporte(fechaInicio, fechaFin);
-  } else {
-      alert('Por favor, seleccione un rango de fechas.');
+  // validacion de fechas
+  const fechaInicioObj = new Date(fechaInicio);
+  const fechaFinObj = new Date(fechaFin);
+
+  if (!fechaInicio || !fechaFin) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Por favor, seleccione ambas fechas.',
+    });
+    return;
   }
+
+  if (fechaInicioObj > fechaFinObj) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'La fecha de inicio no puede ser posterior a la fecha fin.',
+    });
+    return;
+  }
+
+  generarReporte(fechaInicio, fechaFin);
 });
 
-const rowsPerPage = 3;
+const rowsPerPage = 5;
 let currentPage = 1;
 let currentRows = [];
 
@@ -194,13 +211,18 @@ function generarReporte(fechaInicio, fechaFin) {
   const sales = JSON.parse(localStorage.getItem('sales')) || [];
   const filteredSales = sales.filter(sale => {
     const saleDate = new Date(sale.date);
-    return saleDate >= new Date(fechaInicio) && saleDate <= new Date(fechaFin);
+    const inicio = new Date(fechaInicio);
+    const fin = new Date(fechaFin);
+
+    fin.setDate(fin.getDate() + 1);
+
+    return saleDate >= inicio && saleDate < fin;
   });
 
   if (filteredSales.length === 0) {
-    document.querySelector('#reporte-tabla tbody').innerHTML = '<tr><td colspan="5">No hay ventas en el rango de fechas seleccionado.</td></tr>';
+    document.querySelector('#reporte-tabla tbody').innerHTML = '<tr><td colspan="5">No se encontraron resultados.</td></tr>';
     document.getElementById('total-ventas').innerHTML = '';
-		document.getElementById('paginacion').innerHTML = '';
+		document.getElementById('pagination').innerHTML = '';
     return;
   }
 
@@ -215,7 +237,6 @@ function generarReporte(fechaInicio, fechaFin) {
         <tr>
           <td>${new Date(sale.date).toLocaleDateString()}</td>
           <td>${item.name}</td>
-          <td>$${item.price.toFixed(2)}</td>
           <td>${item.quantity}</td>
           <td>$${total.toFixed(2)}</td>
         </tr>
@@ -225,8 +246,8 @@ function generarReporte(fechaInicio, fechaFin) {
 
 	currentRows = rows;
   currentPage = 1; // Reset to first page when new report is generated
-  renderTable(rows);
-  renderPagination(rows.length);
+  renderTable();
+  renderPagination();
 
   const totalVentasDiv = document.getElementById('total-ventas');
   totalVentasDiv.innerHTML = `<strong>Total Ventas: $${totalVentas.toFixed(2)}</strong>`;
@@ -242,22 +263,44 @@ function renderTable(rows) {
 
 function renderPagination() {
   const pageCount = Math.ceil(currentRows.length / rowsPerPage);
-  const paginacionDiv = document.getElementById('paginacion');
-  paginacionDiv.innerHTML = '';
+  const pagination = document.getElementById('pagination');
+  pagination.innerHTML = '';
+
+  const prevButton = document.createElement('li');
+  prevButton.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+  prevButton.innerHTML = `<a class="page-link" href="#">Ant.</a>`;
+  prevButton.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderTable();
+      renderPagination();
+    }
+  });
+  pagination.appendChild(prevButton);
 
   for (let i = 1; i <= pageCount; i++) {
-    const button = document.createElement('button');
-    button.textContent = i;
-    button.classList.add('pagination-button');
-    if (i === currentPage) {
-      button.classList.add('active');
-    }
-    button.addEventListener('click', () => {
+    const pageItem = document.createElement('li');
+    pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
+    pageItem.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+    pageItem.addEventListener('click', () => {
       currentPage = i;
       renderTable();
-      document.querySelectorAll('.pagination-button').forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
+      renderPagination();
     });
-    paginacionDiv.appendChild(button);
+    pagination.appendChild(pageItem);
   }
+
+  const nextButton = document.createElement('li');
+  nextButton.className = `page-item ${currentPage === pageCount ? 'disabled' : ''}`;
+  nextButton.innerHTML = `<a class="page-link" href="#">Sig.</a>`;
+  nextButton.addEventListener('click', () => {
+    if (currentPage < pageCount) {
+      currentPage++;
+      renderTable();
+      renderPagination();
+    }
+  });
+  pagination.appendChild(nextButton);
 }
+
+updateGenerarReporteButton();
