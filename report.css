@@ -161,6 +161,7 @@ main {
   justify-content: center;
   align-items: center;
   position: absolute;
+  list-style: none;
   bottom: 20px;
   left: 0;
   width: 100%;
@@ -176,9 +177,8 @@ main {
   padding: 0.5rem 0.75rem;
   margin-left: -1px;
   line-height: 1.25;
-  color: #000;
+  color: #adb5bd;
   background-color: #fff;
-  border: 1px solid #dee2e6;
   text-decoration: none;
 }
 
@@ -186,7 +186,6 @@ main {
   color: #6c757d;
   pointer-events: none;
   background-color: #fff;
-  border: #dee2e6;
 }
 
 .page-item.active .page-link {
