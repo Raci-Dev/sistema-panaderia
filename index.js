@@ -203,7 +203,7 @@ document.getElementById('generar-reporte').addEventListener('click', function() 
   generarReporte(fechaInicio, fechaFin);
 });
 
-const rowsPerPage = 5;
+const rowsPerPage = 6;
 let currentPage = 1;
 let currentRows = [];
 
