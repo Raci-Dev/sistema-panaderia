@@ -124,10 +124,10 @@ main {
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   overflow-x: auto; /* Enables horizontal scroll */
   width: 100%;
   min-height: 300px;
+  position: relative;
 }
 
 .reporte-tabla {
@@ -159,10 +159,12 @@ main {
 
 .pagination {
   display: flex;
-  padding-left: 0;
-  list-style: none;
-  border-radius: 0.25rem;
-  margin-top: 20px;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
 }
 
 .page-item {
