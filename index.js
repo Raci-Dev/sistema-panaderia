@@ -233,9 +233,11 @@ function generarReporte(fechaInicio, fechaFin) {
     const inicio = new Date(fechaInicio);
     const fin = new Date(fechaFin);
 
+    saleDate.setHours(0, 0, 0, 0);
+
     fin.setDate(fin.getDate() + 1);
 
-    return saleDate >= inicio && saleDate < fin;
+    return saleDate >= inicio && saleDate <= fin;
   });
 
   if (filteredSales.length === 0) {
