@@ -67,6 +67,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.add-to-cart').forEach(button => {
       button.addEventListener('click', () => {
+        const spinner = button.querySelector('.spinner');
+        const icon = button.querySelector('.fas');
+
+        //mostrar spinner y ocultar icono
+        spinner.style.display = 'inline-block';
+        icon.style.display = 'none';
+        button.disabled = true;
+
+        // simular una operación asincrona con SetTimeout
+        setTimeout(() => {
           const product = button.parentElement;
           const productId = product.getAttribute('data-id');
           const productName = product.getAttribute('data-name');
@@ -82,6 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
           localStorage.setItem('cart', JSON.stringify(cart));
           updateCart();
+
+          // ocultar spinner y mostrar icono
+          spinner.style.display = 'none';
+          icon.style.display = 'inline-block';
+          button.disabled = false;
+        }, 1000); // simular un retraso de 1 segundo
       });
   });
 
@@ -169,6 +185,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateCart();
 });
+
+
+
 
 
 
