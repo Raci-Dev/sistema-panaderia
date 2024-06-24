@@ -1,3 +1,30 @@
+window.addEventListener('load', () => {
+  const isFirstVisit = localStorage.getItem('isFirstVisit') === null;
+
+  if (isFirstVisit) {
+    // Marcar que el usuario ya visitó la página
+    localStorage.setItem('isFirstVisit', 'false');
+
+  setTimeout(() => {
+    // Aplicar transición para desvanecer el splash screen
+    document.getElementById('splash-screen').style.opacity = '0';
+    setTimeout(() => {
+      // Ocultar el splash screen después de la transición
+      document.getElementById('splash-screen').style.display = 'none';
+    }, 500); // Tiempo coincidente con la transición en CSS
+  }, 2000); // 3000 ms = 3 segundos
+
+} else {
+   // Si no es la primera visita, ocultar el splash screen inmediatamente
+   document.getElementById('splash-screen').style.display = 'none';
+
+   // Agregar clase al body para mostrar contenido principal
+   document.body.classList.add('show-content');
+}
+
+});
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
   const sales = JSON.parse(localStorage.getItem('sales')) || [];
