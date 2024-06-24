@@ -1,14 +1,21 @@
 window.addEventListener('load', () => {
-
-  setTimeout(() => {
-    // Aplicar transición para desvanecer el splash screen
-    document.getElementById('splash-screen').style.opacity = '0';
+  // verificar si ya se mostro el splash screen en esta sesión
+  if (!sessionStorage.getItem('splashShown')) {
     setTimeout(() => {
-      // Ocultar el splash screen después de la transición
-      document.getElementById('splash-screen').style.display = 'none';
-    }, 500); // Tiempo coincidente con la transición en CSS
-  }, 2000); // 3000 ms = 3 segundos
+      // Aplicar transición para desvanecer el splash screen
+      document.getElementById('splash-screen').style.opacity = '0';
+      setTimeout(() => {
+        // Ocultar el splash screen después de la transición
+        document.getElementById('splash-screen').style.display = 'none';
+      }, 500); // Tiempo coincidente con la transición en CSS
+    }, 2000); // 3000 ms = 3 segundos
 
+    // Marcar que el splash screen ya se mostró en esta sesión
+    sessionStorage.setItem('splashShown', 'true');
+  } else {
+    // Si ya se mostró el splash screen, ocultarlo directamente
+    document.getElementById('splash-screen').style.display = 'none';
+  }
 });
 
 
