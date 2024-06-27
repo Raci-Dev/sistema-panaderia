@@ -1,22 +1,24 @@
 window.addEventListener('load', () => {
-  // verificar si ya se mostro el splash screen en esta sesión
-  if (!sessionStorage.getItem('splashShown')) {
-    setTimeout(() => {
-      // Aplicar transición para desvanecer el splash screen
-      document.getElementById('splash-screen').style.opacity = '0';
-      setTimeout(() => {
-        // Ocultar el splash screen después de la transición
-        document.getElementById('splash-screen').style.display = 'none';
-      }, 500); // Tiempo coincidente con la transición en CSS
-    }, 2000); // 3000 ms = 3 segundos
-
-    // Marcar que el splash screen ya se mostró en esta sesión
-    sessionStorage.setItem('splashShown', 'true');
+  // Verificar conexión a internet
+  if (navigator.onLine) {
+    // Si hay conexión, ocultar el splash screen después de cargar
+    hideSplashScreen();
   } else {
-    // Si ya se mostró el splash screen, ocultarlo directamente
-    document.getElementById('splash-screen').style.display = 'none';
+    // Si no hay conexión, mostrar el splash screen hasta que haya conexión
+    document.getElementById('splash-screen').style.display = 'flex'; // Mostrar el splash screen
+    window.addEventListener('online', () => {
+      // Cuando haya conexión, ocultar el splash screen
+      hideSplashScreen();
+    });
   }
 });
+
+function hideSplashScreen() {
+  document.getElementById('splash-screen').style.opacity = '0'; // Aplicar transición para desvanecer el splash screen
+  setTimeout(() => {
+    document.getElementById('splash-screen').style.display = 'none'; // Ocultar el splash screen después de la transición
+  }, 500); // Tiempo coincidente con la transición en CSS
+}
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -96,29 +98,52 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.style.display = 'none';
         button.disabled = true;
 
-        // simular una operación asincrona con SetTimeout
-        setTimeout(() => {
+        const addItemToCart = () => {
           const product = button.parentElement;
           const productId = product.getAttribute('data-id');
           const productName = product.getAttribute('data-name');
           const productPrice = parseFloat(product.getAttribute('data-price'));
           const productImage = product.getAttribute('data-image');
-
+    
           const existingItem = cart.find(item => item.id === productId);
           if (existingItem) {
-              existingItem.quantity++;
+            existingItem.quantity++;
           } else {
-              cart.push({ id: productId, name: productName, price: productPrice, quantity: 1, image: productImage });
+            cart.push({ id: productId, name: productName, price: productPrice, quantity: 1, image: productImage });
           }
-
+    
           localStorage.setItem('cart', JSON.stringify(cart));
           updateCart();
-
-          // ocultar spinner y mostrar icono
+    
+          // Ocultar spinner y mostrar icono
           spinner.style.display = 'none';
           icon.style.display = 'inline-block';
           button.disabled = false;
-        }, 1000); // simular un retraso de 1 segundo
+        };
+    
+        const checkConnectionAndAddToCart = () => {
+          if (navigator.onLine) {
+            addItemToCart();
+          } else {
+            const timeout = setTimeout(() => {
+              alert('Sin conexión a internet');
+              // Ocultar spinner y mostrar icono
+              spinner.style.display = 'none';
+              icon.style.display = 'inline-block';
+              button.disabled = false;
+            }, 5000); // Timeout de 5 segundos
+    
+            const handleOnline = () => {
+              clearTimeout(timeout);
+              addItemToCart();
+              window.removeEventListener('online', handleOnline); // Remover el evento después de ejecutarse
+            };
+    
+            window.addEventListener('online', handleOnline);
+          }
+        };
+    
+        checkConnectionAndAddToCart();
       });
   });
 

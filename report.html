@@ -6,6 +6,7 @@
 	<meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reporte de Ventas</title>
+  <!-- Estilos CSS -->
   <link rel="stylesheet" href="report.css">
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script> 
@@ -15,62 +16,55 @@
 <body>
 
 
-	<header>
-    <div class="header-container">
-      <h1>Reportes</h1>
-        <nav>
-          <ul>
-            <li><a href="index.html">Inicio</a></li>
-          </ul>
-        </nav>
-    </div>
-  </header>
+<header>
+  <div class="header-container">
+    <h1>Reportes</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
 	
 
-  <main>
-    <div class="container">
-      <form id="reporte-form" class="form-container">
-        <label for="fecha-inicio">Fecha de Inicio:</label>
-        <input type="date" id="fecha-inicio" name="fecha-inicio" required>
-        <label for="fecha-fin">Fecha de Fin:</label>
-        <input type="date" id="fecha-fin" name="fecha-fin" required>
-        <button type="button" id="generar-reporte">Generar Reporte</button>
-      </form>
-      <div id="reporte-grid" class="grid table-container">
-        <table id="reporte-tabla" class="reporte-tabla">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Producto</th>
-              <th>Cantidad</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-        <nav aria-label="page navigation">
-          <ul class="pagination" id="pagination">
-            <!-- pahinacion dinamica aqui -->
-          </ul>
-        </nav>
-      </div>
-      <div id="total-ventas">
-        <!-- Aquí se mostrará el total global de ventas -->
-      </div>
+<main>
+  <div class="container">
+    <form id="reporte-form" class="form-container">
+      <label for="fecha-inicio">Fecha de Inicio:</label>
+      <input type="date" id="fecha-inicio" name="fecha-inicio" required>
+      <label for="fecha-fin">Fecha de Fin:</label>
+      <input type="date" id="fecha-fin" name="fecha-fin" required>
+      <button type="button" id="generar-reporte">Generar Reporte</button>
+    </form>
+    <div id="reporte-grid" class="grid table-container">
+      <table id="reporte-tabla" class="reporte-tabla">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+      <tbody></tbody>
+    </table>
+    <nav aria-label="page navigation">
+      <ul class="pagination" id="pagination">
+        <!-- paginación dinamica aqui -->
+      </ul>
+    </nav>
+  </div>
+    <div id="total-ventas">
+      <!-- Aquí se mostrará el total global de ventas -->
     </div>
-  </main>
+  </div>
+</main>
   
 
-  <footer>
-    <div class="footer-container">
-      <p>&copy; 2024 Panaderia</p>
-    </div>
-  </footer>
-
-
-  <script src="index.js"></script>
+<script src="index.js"></script>
 
 
 </body>
+
 </html>
