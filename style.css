@@ -359,3 +359,30 @@ footer p {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+
+
+
+
+.message-container {
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  margin: 200px 20px 20px 35px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.no-products-message i {
+  font-size: 5rem;
+  color: #ddd;
+  margin-bottom: 10px;
+}
+
+.no-products-message p {
+  font-size: 1.35rem;
+  color: #ddd;
+  margin: 0;
+}

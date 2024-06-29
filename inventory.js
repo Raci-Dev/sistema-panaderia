@@ -27,7 +27,6 @@ document.getElementById('addProduct').addEventListener('click', () => {
       localStorage.setItem('inventory', JSON.stringify(inventory));
 
       displayInventory();
-
       // Limpiar los campos del formulario
       document.getElementById('productImage').value = '';
       document.getElementById('productName').value = '';
@@ -60,6 +59,8 @@ document.getElementById('updateProduct').addEventListener('click', () => {
           stock: productStock
         };
         localStorage.setItem('inventory', JSON.stringify(inventory));
+
+
         displayInventory();
         resetForm();
       };
@@ -72,6 +73,8 @@ document.getElementById('updateProduct').addEventListener('click', () => {
         stock: productStock
       };
       localStorage.setItem('inventory', JSON.stringify(inventory));
+
+
       displayInventory();
       resetForm();
     }
@@ -92,6 +95,13 @@ function editProduct(index) {
   document.getElementById('updateProduct').style.display = 'block';
 
   editIndex = index;
+}
+
+function deleteProduct(index) {
+  let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+  inventory.splice(index, 1);
+  localStorage.setItem('inventory', JSON.stringify(inventory));
+  displayInventory();
 }
 
 function resetForm() {
@@ -140,8 +150,13 @@ function displayInventory() {
     editButton.textContent = 'Editar';
     editButton.addEventListener('click', () => editProduct(index));
     actionsCell.appendChild(editButton);
-    row.appendChild(actionsCell);
 
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Eliminar';
+    deleteButton.addEventListener('click', () => deleteProduct(index));
+    actionsCell.appendChild(deleteButton);
+
+    row.appendChild(actionsCell);
     inventoryBody.appendChild(row);
   });
 

@@ -25,6 +25,7 @@ function hideSplashScreen() {
 document.addEventListener('DOMContentLoaded', () => {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
   const sales = JSON.parse(localStorage.getItem('sales')) || [];
+  const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
   const cartIcon = document.getElementById('cart-icon');
   const cartCount = document.getElementById('cart-count');
@@ -93,6 +94,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
+    if (inventory.length === 0) {
+      const noProductsMessage = document.createElement('div');
+      noProductsMessage.classList.add('no-products-message');
+      noProductsMessage.innerHTML = `
+      <div class="message-container">
+      <i class="fas fa-box-open"></i>
+        <p>No hay productos disponibles.</p>
+      </div>
+      `;
+      productsSection.appendChild(noProductsMessage);
+    } else {
+
     inventory.forEach(product => {
       const productDiv = document.createElement('div');
       productDiv.classList.add('product');
@@ -128,15 +141,28 @@ document.addEventListener('DOMContentLoaded', () => {
           const productPrice = parseFloat(product.getAttribute('data-price'));
           const productImage = product.getAttribute('data-image');
 
-          const existingItem = cart.find(item => item.id === productId);
-          if (existingItem) {
-            existingItem.quantity++;
-          } else {
-            cart.push({ id: productId, name: productName, price: productPrice, quantity: 1, image: productImage });
-          }
+          const inventoryItem = inventory.find(item => item.id === productId);
+
+          if (inventoryItem && inventoryItem.stock > 0) {
+              const existingItem = cart.find(item => item.id === productId);
+              if (existingItem) {
+                if (inventoryItem.stock > existingItem.quantity) {
+                  existingItem.quantity++;
+              } else {
+                alert('No hay suficiente stock disponible para este producto.');
+              }
+            } else {
+              cart.push({ id: productId, name: productName, price: productPrice, quantity: 1, image: productImage });
+            }
 
           localStorage.setItem('cart', JSON.stringify(cart));
           updateCart();
+
+          } else if (!inventoryItem) {
+            alert('El producto no está disponible en el inventario.');
+          } else {
+            alert('No hay suficiente stock disponible para este producto.');
+          }
 
           spinner.style.display = 'none';
           icon.style.display = 'inline-block';
@@ -168,6 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+}
 
   cartIcon.addEventListener('click', () => {
     modal.style.display = 'block';
@@ -186,9 +213,16 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('cart-items').addEventListener('click', (event) => {
     if (event.target.classList.contains('increase-quantity')) {
       const index = event.target.getAttribute('data-index');
+      const item = cart[index];
+      const inventoryItem = inventory.find(product => product.id === item.id);
+
+    if (inventoryItem && inventoryItem.stock > item.quantity) {
       cart[index].quantity++;
-      localStorage.setItem('cart', JSON.stringify(cart));
-      updateCart();
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCart();
+      } else {
+        alert('Producto insuficiente en el inventario.');
+      }
     } else if (event.target.classList.contains('decrease-quantity')) {
       const index = event.target.getAttribute('data-index');
       if (cart[index].quantity > 1) {
@@ -228,6 +262,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Función para vender un producto y actualizar el inventario
+  const sellProduct = (productId, quantitySold) => {
+    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+    const productIndex = inventory.findIndex(item => item.id === productId);
+
+    if (productIndex !== -1) {
+      inventory[productIndex].stock -= quantitySold; // Reducir el stock vendido
+      localStorage.setItem('inventory', JSON.stringify(inventory));
+    }
+  };
+
   checkoutButton.addEventListener('click', () => {
     const sale = {
       date: new Date().toISOString(),
@@ -237,6 +282,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     sales.push(sale);
     localStorage.setItem('sales', JSON.stringify(sales));
+
+    // Vender cada producto del carrito y actualizar el inventario
+    sale.items.forEach(item => {
+      sellProduct(item.id, item.quantity);
+    });
+    
     localStorage.removeItem('cart');
     cart.length = 0;
     updateCart();
