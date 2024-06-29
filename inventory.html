@@ -4,57 +4,54 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-
-  <style>
-    .inventory-form {
-      margin: 20px 0;
-    }
-    .inventory-form input, .inventory-form button {
-      display: block;
-      margin: 10px 0;
-    }
-    .inventory-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .inventory-table th, .inventory-table td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
-    .inventory-table th {
-      background-color: #f2f2f2;
-    }
-    .inventory-image {
-      width: 50px;
-      height: 50px;
-    }
-  </style>
+  <link rel="stylesheet" href="inventory.css">
+  <!-- CSS FontAwesome-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <body>
 
-  <h1>Inventario</h1>
-  <div class="inventory-form">
-    <input type="file" id="productImage" accept="image/*">
-    <input type="text" id="productName" placeholder="Nombre del producto">
-    <input type="number" id="productPrice" placeholder="Precio del producto">
-    <input type="number" id="productStock" placeholder="Cantidad en stock">
-    <button id="addProduct">Agregar Producto</button>
-    <button id="updateProduct" style="display:none;">Actualizar Producto</button>
-  </div>
-  <table class="inventory-table">
-    <thead>
-      <tr>
-        <th>Imagen</th>
-        <th>Nombre</th>
-        <th>Precio</th>
-        <th>Cantidad Disponible</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody id="inventoryBody">
-      <!-- Los productos se agregarán aquí -->
-    </tbody>
-  </table>
+  <header>
+    <div class="header-container">
+      <h1>Inventario</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Inicio</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+
+  <main>
+    <div class="container">
+      <div class="inventory-form">
+        <input type="file" id="productImage" accept="image/*" class="input-field">
+        <input type="text" id="productName" placeholder="Nombre del producto" class="input-field">
+        <input type="number" id="productPrice" placeholder="Precio del producto" class="input-field">
+        <input type="number" id="productStock" placeholder="Cantidad en stock" class="input-field">
+        <button id="addProduct" class="btn-primary">Agregar Producto</button>
+        <button id="updateProduct" style="display:none;" class="btn-primary">Actualizar Producto</button>
+      </div>
+
+      <div class="table-container">
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Cantidad Disponible</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryBody">
+            <!-- Los productos se agregarán aquí -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
 
   <script src="inventory.js"></script>
   

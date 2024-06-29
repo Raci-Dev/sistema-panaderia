@@ -1,0 +1,184 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Estilos generales */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #ddd;
+  color: #f8f9fa;
+}
+
+header {
+  background-color: #E15002;
+  color: white;
+  padding: 15px 20px;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.5em;
+}
+
+header nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+header nav a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+header nav a:hover {
+  color: #adb5bd;
+}
+
+/* Main content styles */
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  flex-grow: 1;
+}
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+ /* padding: 20px;*/
+  color: #232628;
+}
+
+.inventory-form {
+  display: flex;
+  margin-bottom: 20px;
+  flex-direction: column;
+}
+
+.inventory-form input,
+.inventory-form button {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #555;
+  transition: border-color 0.3s ease;
+}
+
+.inventory-form input:focus,
+.inventory-form button:focus {
+  border-color: #E15002; /* Cambia el color del borde a naranja cuando el input o botón está activo */
+  outline: none; /* Elimina el contorno predeterminado en algunos navegadores */
+}
+
+.inventory-form button {
+  background-color: #E15002;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.inventory-form button:hover {
+  background-color: #ed7a3c;
+}
+
+.table-container {
+  max-width: 100%;
+  overflow-x: auto; /* Permite el desplazamiento horizontal en pantallas pequeñas */
+
+  margin-top: 60px;
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden; /* Asegura que el contenido no sobresalga */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.inventory-table th,
+.inventory-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.inventory-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.inventory-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.inventory-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.inventory-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Estilos específicos para tamaños de pantalla */
+@media (max-width: 600px) {
+  .table-container {
+    overflow-x: auto; /* Asegura desplazamiento horizontal en pantallas pequeñas */
+  }
+
+  .inventory-table th,
+  .inventory-table td {
+    font-size: 14px; /* Reducir tamaño de fuente en pantallas pequeñas */
+  }
+}
+
+
+.action-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.action-button:hover {
+  color: #ff6347; /* Cambia el color al pasar el mouse */
+}
+
+/* Estilos específicos para el botón de Editar */
+.edit-button {
+  color: #007bff; /* Color azul */
+}
+
+/* Estilos específicos para el botón de Eliminar */
+.delete-button {
+  color: #dc3545; /* Color rojo */
+}
+
+/* Estilos para los íconos dentro de los botones */
+.action-button i {
+  margin-right: 5px; /* Espacio a la derecha del ícono */
+}

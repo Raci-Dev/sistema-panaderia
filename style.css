@@ -3,7 +3,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #232628;
+  background-color: #ddd;
 }
 
 header {
@@ -72,10 +72,12 @@ section {
 .product {
   display: flex;
   text-align: center;
-  background: #dddddd;
+  background: #fff;
   border-radius: 8px;
+  border: 2px solid #ccc;
   padding: 15px;
   flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Agrega el box-shadow */
 }
 
 .product img {
@@ -368,7 +370,7 @@ footer p {
   padding: 20px;
   max-width: 400px;
   width: 100%;
-  margin: 200px 20px 20px 35px;
+  margin: 200px 20px 20px 36px;
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -377,12 +379,13 @@ footer p {
 
 .no-products-message i {
   font-size: 5rem;
-  color: #ddd;
+  color: #fb9157;
   margin-bottom: 10px;
 }
 
 .no-products-message p {
   font-size: 1.35rem;
-  color: #ddd;
+  font-weight: bold;
+  color: #fb9157;
   margin: 0;
 }

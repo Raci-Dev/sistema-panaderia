@@ -147,12 +147,14 @@ function displayInventory() {
 
     const actionsCell = document.createElement('td');
     const editButton = document.createElement('button');
-    editButton.textContent = 'Editar';
+    editButton.innerHTML = '<i class="fas fa-edit"></i>';
+    editButton.classList.add('action-button', 'edit-button');
     editButton.addEventListener('click', () => editProduct(index));
     actionsCell.appendChild(editButton);
 
     const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Eliminar';
+    deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
+    deleteButton.classList.add('action-button', 'delete-button');
     deleteButton.addEventListener('click', () => deleteProduct(index));
     actionsCell.appendChild(deleteButton);
 
