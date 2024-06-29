@@ -355,7 +355,6 @@ function generarReporte(fechaInicio, fechaFin) {
     const fin = new Date(fechaFin);
 
     saleDate.setHours(0, 0, 0, 0);
-
     fin.setDate(fin.getDate() + 1);
 
     return saleDate >= inicio && saleDate <= fin;
@@ -393,6 +392,8 @@ function generarReporte(fechaInicio, fechaFin) {
 
   const totalVentasDiv = document.getElementById('total-ventas');
   totalVentasDiv.innerHTML = `<strong>Total Ventas: $${totalVentas.toFixed(2)}</strong>`;
+
+  generarPDF(fechaInicio, fechaFin, totalVentas);
 }
 
 function renderTable(rows) {
@@ -445,4 +446,83 @@ function renderPagination() {
   pagination.appendChild(nextButton);
 }
 
-updateGenerarReporteButton();
+function generarPDF(fechaInicio, fechaFin, totalVentas) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: [80, 297]
+  });
+
+  const fechaInicioFormatted = new Date(fechaInicio).toLocaleDateString();
+  const fechaFinFormatted = new Date(fechaFin).toLocaleDateString();
+
+  // Encabezado
+  doc.setFontSize(18);
+  doc.text('Reporte de Ventas', 40, 10, null, null, 'center');
+  doc.setFontSize(12);
+  doc.text(`Desde: ${fechaInicioFormatted}  Hasta: ${fechaFinFormatted}`, 40, 20, null, null, 'center');
+
+  // Crear una tabla temporal para convertirla en una imagen
+  const tempTable = document.createElement('table');
+  tempTable.innerHTML = `
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${currentRows.join('')}
+    </tbody>
+  `;
+  tempTable.style.borderCollapse = 'collapse';
+  tempTable.style.width = '100%';
+  tempTable.style.fontSize = '12px';
+  tempTable.style.position = 'absolute'; // Asegura que la tabla no sea visible
+  tempTable.style.left = '-9999px'; // Asegura que la tabla no sea visible
+
+  const style = document.createElement('style');
+  style.innerHTML = `
+    table, th, td {
+      border: 1px solid #fff;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    td:nth-child(3), td:nth-child(4) {
+      width: 50px;
+    }
+  `;
+
+  document.head.appendChild(style);
+  document.body.appendChild(tempTable);
+  
+
+    html2canvas(tempTable).then(canvas => {
+      var imgData = canvas.toDataURL('image/png');
+      var imgWidth = 70; // Ancho de la imagen en mm (ajusta según sea necesario)
+      var pageHeight = 297;  // Altura de la página en mm (ajusta según sea necesario)
+      var imgHeight = canvas.height * imgWidth / canvas.width;
+
+      // Calcular la posición horizontal para centrar la imagen
+      var centerX = (doc.internal.pageSize.width - imgWidth) / 2;
+      var position = 30;
+
+      doc.addImage(imgData, 'PNG', centerX, position, imgWidth, imgHeight);
+
+      // Remover la tabla temporal
+      document.body.removeChild(tempTable);
+      document.head.removeChild(style);
+
+      // Pie de página
+      doc.setFontSize(14);
+      doc.text(`Total Ventas: $${totalVentas.toFixed(2)}`, 40, doc.internal.pageSize.height - 20, null, null, 'center');
+
+      doc.save('reporte.pdf');
+    });
+  }
