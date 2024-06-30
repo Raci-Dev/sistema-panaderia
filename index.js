@@ -462,6 +462,7 @@ function generarPDF(fechaInicio, fechaFin, totalVentas) {
   doc.text('Reporte de Ventas', 40, 10, null, null, 'center');
   doc.setFontSize(12);
   doc.text(`Desde: ${fechaInicioFormatted}  Hasta: ${fechaFinFormatted}`, 40, 20, null, null, 'center');
+  
 
   // Crear una tabla temporal para convertirla en una imagen
   const tempTable = document.createElement('table');
@@ -476,6 +477,10 @@ function generarPDF(fechaInicio, fechaFin, totalVentas) {
     </thead>
     <tbody>
       ${currentRows.join('')}
+       <tr>
+        <td colspan="3" style="text-align: left;"><strong>Total Ventas:</strong></td>
+        <td><strong>$${totalVentas.toFixed(2)}</strong></td>
+      </tr>
     </tbody>
   `;
   tempTable.style.borderCollapse = 'collapse';
@@ -520,8 +525,8 @@ function generarPDF(fechaInicio, fechaFin, totalVentas) {
       document.head.removeChild(style);
 
       // Pie de página
-      doc.setFontSize(14);
-      doc.text(`Total Ventas: $${totalVentas.toFixed(2)}`, 40, doc.internal.pageSize.height - 20, null, null, 'center');
+      //doc.setFontSize(14);
+      //doc.text(`Total Ventas: $${totalVentas.toFixed(2)}`, 40, doc.internal.pageSize.height - 20, null, null, 'center');
 
       doc.save('reporte.pdf');
     });
