@@ -95,15 +95,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
     if (inventory.length === 0) {
-      const noProductsMessage = document.createElement('div');
-      noProductsMessage.classList.add('no-products-message');
-      noProductsMessage.innerHTML = `
-      <div class="message-container">
-      <i class="fas fa-box-open"></i>
-        <p>No hay productos disponibles.</p>
-      </div>
-      `;
-      productsSection.appendChild(noProductsMessage);
+      Swal.fire({
+        icon: 'info',
+        title: 'No hay productos disponibles',
+        text: 'No hay productos disponibles en el inventario.',
+        showConfirmButton: false,
+        timer: 5000
+      });
     } else {
 
     inventory.forEach(product => {
@@ -121,9 +119,16 @@ document.addEventListener('DOMContentLoaded', () => {
         <button class="add-to-cart"><i class="fas fa-cart-plus"></i> Agregar <div class="spinner" style="display: none;"></div></button>
       `;
 
+      // Verificar si el producto está agotado
+    if (product.stock <= 0) {
+    productDiv.classList.add('out-of-stock');
+    productDiv.querySelector('.add-to-cart').disabled = true;
+    }
+
       productsSection.appendChild(productDiv);
     });
 
+    
     // Agregar event listeners a los botones de agregar al carrito
     document.querySelectorAll('.add-to-cart').forEach(button => {
       button.addEventListener('click', () => {
@@ -149,7 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (inventoryItem.stock > existingItem.quantity) {
                   existingItem.quantity++;
               } else {
-                alert('No hay suficiente stock disponible para este producto.');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Stock insuficiente',
+                  text: 'No hay suficiente stock disponible para este producto.'
+                });
               }
             } else {
               cart.push({ id: productId, name: productName, price: productPrice, quantity: 1, image: productImage });
@@ -158,11 +167,27 @@ document.addEventListener('DOMContentLoaded', () => {
           localStorage.setItem('cart', JSON.stringify(cart));
           updateCart();
 
-          } else if (!inventoryItem) {
-            alert('El producto no está disponible en el inventario.');
-          } else {
-            alert('No hay suficiente stock disponible para este producto.');
+          if (inventoryItem.stock <= cart.find(item => item.id === productId).quantity) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Producto agotado',
+              text: 'Este producto se ha agotado.'
+            });
           }
+
+          } else if (!inventoryItem) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Producto no disponible',
+          text: 'El producto no está disponible en el inventario.'
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Stock insuficiente',
+          text: 'No hay suficiente stock disponible para este producto.'
+        });
+      }
 
           spinner.style.display = 'none';
           icon.style.display = 'inline-block';
@@ -221,7 +246,11 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCart();
       } else {
-        alert('Producto insuficiente en el inventario.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Stock insuficiente',
+          text: 'Producto insuficiente en el inventario.'
+        });
       }
     } else if (event.target.classList.contains('decrease-quantity')) {
       const index = event.target.getAttribute('data-index');
@@ -270,6 +299,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (productIndex !== -1) {
       inventory[productIndex].stock -= quantitySold; // Reducir el stock vendido
       localStorage.setItem('inventory', JSON.stringify(inventory));
+
+      // Verificar si el producto se agotó y notificar
+    if (inventory[productIndex].stock === 0) {
+      const productCard = document.querySelector(`.product[data-id="${productId}"]`);
+      if (productCard) {
+        productCard.classList.add('out-of-stock');
+        productCard.querySelector('.add-to-cart').disabled = true;
+        Swal.fire({
+          icon: 'error',
+          title: 'Producto agotado',
+          text: `El producto "${inventory[productIndex].name}" se ha agotado.`
+        });
+      }
+    }
     }
   };
 
@@ -524,10 +567,24 @@ function generarPDF(fechaInicio, fechaFin, totalVentas) {
       document.body.removeChild(tempTable);
       document.head.removeChild(style);
 
+      // Generar nombre único para el PDF
+       const pdfName = `reporte_${Date.now()}.pdf`;
+
+       // Visualizar el PDF antes de descargar
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', pdfName); 
+
+
+    link.click();
+
       // Pie de página
       //doc.setFontSize(14);
       //doc.text(`Total Ventas: $${totalVentas.toFixed(2)}`, 40, doc.internal.pageSize.height - 20, null, null, 'center');
 
-      doc.save('reporte.pdf');
+      // Limpiar recursos después de visualizar
+    URL.revokeObjectURL(url);
     });
   }

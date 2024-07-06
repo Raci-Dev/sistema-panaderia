@@ -27,15 +27,15 @@ document.getElementById('addProduct').addEventListener('click', () => {
       localStorage.setItem('inventory', JSON.stringify(inventory));
 
       displayInventory();
-      // Limpiar los campos del formulario
-      document.getElementById('productImage').value = '';
-      document.getElementById('productName').value = '';
-      document.getElementById('productPrice').value = '';
-      document.getElementById('productStock').value = '';
+      resetForm();
     };
     reader.readAsDataURL(productImage);
   } else {
-    alert('Por favor complete todos los campos.');
+    Swal.fire({
+      icon: 'warning',
+      title: 'Campos incompletos',
+      text: 'Por favor complete todos los campos.'
+    });
   }
 });
 
@@ -79,7 +79,11 @@ document.getElementById('updateProduct').addEventListener('click', () => {
       resetForm();
     }
   } else {
-    alert('Por favor complete todos los campos.');
+    Swal.fire({
+      icon: 'warning',
+      title: 'Campos incompletos',
+      text: 'Por favor complete todos los campos.'
+    });
   }
 });
 
@@ -161,10 +165,27 @@ function displayInventory() {
     row.appendChild(actionsCell);
     inventoryBody.appendChild(row);
   });
-
-  // Actualizar los productos en la página principal
-  displayMainProducts();
 }
 
 // Mostrar el inventario al cargar la página
 window.addEventListener('load', displayInventory);
+
+
+// MutationObserver para observar cambios en el inventario
+const inventoryObserver = new MutationObserver(() => {
+  const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+  inventory.forEach(product => {
+    if (product.stock === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Productos agotados',
+        text: `No hay suficiente stock disponible.`
+      });
+    }
+  });
+});
+
+inventoryObserver.observe(document.getElementById('inventoryBody'), {
+  childList: true,
+  subtree: true
+});
