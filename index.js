@@ -1,32 +1,27 @@
 window.addEventListener('load', () => {
-  // Verificar conexión a internet
-  if (navigator.onLine) {
-    // Si hay conexión, ocultar el splash screen después de cargar
-    hideSplashScreen();
-  } else {
-    // Si no hay conexión, mostrar el splash screen hasta que haya conexión
-    document.getElementById('splash-screen').style.display = 'flex'; // Mostrar el splash screen
-    window.addEventListener('online', () => {
-      // Cuando haya conexión, ocultar el splash screen
-      hideSplashScreen();
-    });
-  }
+  // Mostrar el splash screen al cargar la página
+  document.getElementById('splash-screen').style.display = 'flex';
+  hideSplashScreen();
 });
 
+// Función para ocultar el splash screen después de 5 segundos
 function hideSplashScreen() {
-  document.getElementById('splash-screen').style.opacity = '0'; // Aplicar transición para desvanecer el splash screen
+  const splashScreen = document.getElementById('splash-screen');
+  splashScreen.style.opacity = '0'; // Aplicar transición para desvanecer el splash screen
+
   setTimeout(() => {
-    document.getElementById('splash-screen').style.display = 'none'; // Ocultar el splash screen después de la transición
-  }, 500); // Tiempo coincidente con la transición en CSS
+    splashScreen.style.display = 'none'; // Ocultar el splash screen después de la transición
+    displayMainProducts();
+  }, 5000); // Tiempo coincidente con la transición en CSS
 }
 
-
-
 document.addEventListener('DOMContentLoaded', () => {
+  // Inicialización de variables desde localStorage
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
   const sales = JSON.parse(localStorage.getItem('sales')) || [];
   const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
+  // Variables de referencia a elementos del DOM
   const cartIcon = document.getElementById('cart-icon');
   const cartCount = document.getElementById('cart-count');
   const modal = document.getElementById('cart-modal');
@@ -35,12 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const emptyCartButton = document.getElementById('empty-cart');
   const checkoutButton = document.getElementById('checkout');
 
+  // Función para actualizar el carrito
   function updateCart() {
     const cartItemsContainer = document.getElementById('cart-items');
     const totalPriceContainer = document.getElementById('total-price');
     cartItemsContainer.innerHTML = '';
     let totalPrice = 0;
 
+    // Mostrar mensaje de carrito vacío si no hay items
     if (cart.length === 0) {
       cartEmptyMessage.style.display = 'block';
       emptyCartButton.disabled = true;
@@ -51,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
       checkoutButton.disabled = false;
     }
 
+    // Renderizar los items del carrito
     cart.forEach((item, index) => {
       const li = document.createElement('li');
 
@@ -88,71 +86,99 @@ document.addEventListener('DOMContentLoaded', () => {
     cartCount.textContent = cart.length;
   }
 
+  // Función para mostrar los productos principales
   function displayMainProducts() {
     const productsSection = document.getElementById('products');
     productsSection.innerHTML = '';
 
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
-    if (inventory.length === 0) {
-      Swal.fire({
-        icon: 'info',
-        title: 'No hay productos disponibles',
-        text: 'No hay productos disponibles en el inventario.',
-        showConfirmButton: false,
-        timer: 5000
-      });
-    } else {
+    // Retrasar la verificación del inventario y la posible muestra de la alerta
+    setTimeout(() => {
+      if (inventory.length === 0) {
+        Swal.fire({
+          icon: 'info',
+          title: 'No hay productos disponibles',
+          text: 'No hay productos disponibles en el inventario.',
+          showConfirmButton: false,
+          timer: 3000
+        });
+      } else {
+        inventory.forEach(product => {
+          const productDiv = document.createElement('div');
+          productDiv.classList.add('product');
+          productDiv.setAttribute('data-id', product.id);
+          productDiv.setAttribute('data-name', product.name);
+          productDiv.setAttribute('data-price', product.price);
+          productDiv.setAttribute('data-image', product.image);
 
-    inventory.forEach(product => {
-      const productDiv = document.createElement('div');
-      productDiv.classList.add('product');
-      productDiv.setAttribute('data-id', product.id);
-      productDiv.setAttribute('data-name', product.name);
-      productDiv.setAttribute('data-price', product.price);
-      productDiv.setAttribute('data-image', product.image);
+          productDiv.innerHTML = `
+            <img src="${product.image}" alt="${product.name}">
+            <h3>${product.name}</h3>
+            <p>$${product.price.toFixed(2)}</p>
+            <button class="add-to-cart"><i class="fas fa-cart-plus"></i> Agregar <div class="spinner" style="display: none;"></div></button>
+          `;
 
-      productDiv.innerHTML = `
-        <img src="${product.image}" alt="${product.name}">
-        <h3>${product.name}</h3>
-        <p>$${product.price.toFixed(2)}</p>
-        <button class="add-to-cart"><i class="fas fa-cart-plus"></i> Agregar <div class="spinner" style="display: none;"></div></button>
-      `;
+          // Verificar si el producto está agotado
+          if (product.stock <= 0) {
+            productDiv.classList.add('out-of-stock');
+            productDiv.querySelector('.add-to-cart').disabled = true;
+          }
 
-      // Verificar si el producto está agotado
-    if (product.stock <= 0) {
-    productDiv.classList.add('out-of-stock');
-    productDiv.querySelector('.add-to-cart').disabled = true;
-    }
+          productsSection.appendChild(productDiv);
+        });
 
-      productsSection.appendChild(productDiv);
-    });
+        // Agregar event listeners a los botones de agregar al carrito
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+          button.addEventListener('click', () => {
+            const spinner = button.querySelector('.spinner');
+            const icon = button.querySelector('.fas');
 
-    
-    // Agregar event listeners a los botones de agregar al carrito
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-      button.addEventListener('click', () => {
-        const spinner = button.querySelector('.spinner');
-        const icon = button.querySelector('.fas');
+            spinner.style.display = 'inline-block';
+            icon.style.display = 'none';
+            button.disabled = true;
 
-        spinner.style.display = 'inline-block';
-        icon.style.display = 'none';
-        button.disabled = true;
+            const addItemToCart = () => {
+              const product = button.parentElement;
+              const productId = product.getAttribute('data-id');
+              const productName = product.getAttribute('data-name');
+              const productPrice = parseFloat(product.getAttribute('data-price'));
+              const productImage = product.getAttribute('data-image');
 
-        const addItemToCart = () => {
-          const product = button.parentElement;
-          const productId = product.getAttribute('data-id');
-          const productName = product.getAttribute('data-name');
-          const productPrice = parseFloat(product.getAttribute('data-price'));
-          const productImage = product.getAttribute('data-image');
+              const inventoryItem = inventory.find(item => item.id === productId);
 
-          const inventoryItem = inventory.find(item => item.id === productId);
+              if (inventoryItem && inventoryItem.stock > 0) {
+                const existingItem = cart.find(item => item.id === productId);
+                if (existingItem) {
+                  if (inventoryItem.stock > existingItem.quantity) {
+                    existingItem.quantity++;
+                  } else {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Stock insuficiente',
+                      text: 'No hay suficiente stock disponible para este producto.'
+                    });
+                  }
+                } else {
+                  cart.push({ id: productId, name: productName, price: productPrice, quantity: 1, image: productImage });
+                }
 
-          if (inventoryItem && inventoryItem.stock > 0) {
-              const existingItem = cart.find(item => item.id === productId);
-              if (existingItem) {
-                if (inventoryItem.stock > existingItem.quantity) {
-                  existingItem.quantity++;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCart();
+
+                if (inventoryItem.stock <= cart.find(item => item.id === productId).quantity) {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Producto agotado',
+                    text: 'Este producto se ha agotado.'
+                  });
+                }
+              } else if (!inventoryItem) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Producto no disponible',
+                  text: 'El producto no está disponible en el inventario.'
+                });
               } else {
                 Swal.fire({
                   icon: 'error',
@@ -160,89 +186,66 @@ document.addEventListener('DOMContentLoaded', () => {
                   text: 'No hay suficiente stock disponible para este producto.'
                 });
               }
-            } else {
-              cart.push({ id: productId, name: productName, price: productPrice, quantity: 1, image: productImage });
-            }
 
-          localStorage.setItem('cart', JSON.stringify(cart));
-          updateCart();
-
-          if (inventoryItem.stock <= cart.find(item => item.id === productId).quantity) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Producto agotado',
-              text: 'Este producto se ha agotado.'
-            });
-          }
-
-          } else if (!inventoryItem) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Producto no disponible',
-          text: 'El producto no está disponible en el inventario.'
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Stock insuficiente',
-          text: 'No hay suficiente stock disponible para este producto.'
-        });
-      }
-
-          spinner.style.display = 'none';
-          icon.style.display = 'inline-block';
-          button.disabled = false;
-        };
-
-        const checkConnectionAndAddToCart = () => {
-          if (navigator.onLine) {
-            addItemToCart();
-          } else {
-            const timeout = setTimeout(() => {
-              alert('Sin conexión a internet');
               spinner.style.display = 'none';
               icon.style.display = 'inline-block';
               button.disabled = false;
-            }, 5000);
-
-            const handleOnline = () => {
-              clearTimeout(timeout);
-              addItemToCart();
-              window.removeEventListener('online', handleOnline);
             };
 
-            window.addEventListener('online', handleOnline);
-          }
-        };
+            const checkConnectionAndAddToCart = () => {
+              if (navigator.onLine) {
+                addItemToCart();
+              } else {
+                const timeout = setTimeout(() => {
+                  alert('Sin conexión a internet');
+                  spinner.style.display = 'none';
+                  icon.style.display = 'inline-block';
+                  button.disabled = false;
+                }, 5000);
 
-        checkConnectionAndAddToCart();
-      });
-    });
+                const handleOnline = () => {
+                  clearTimeout(timeout);
+                  addItemToCart();
+                  window.removeEventListener('online', handleOnline);
+                };
+
+                window.addEventListener('online', handleOnline);
+              }
+            };
+
+            checkConnectionAndAddToCart();
+          });
+        });
+      }
+    }, 1000); // Espera el mismo tiempo que el splash screen para mostrar la alerta
   }
-}
 
+  // Mostrar el modal del carrito al hacer clic en el icono del carrito
   cartIcon.addEventListener('click', () => {
     modal.style.display = 'block';
   });
 
+  // Cerrar el modal al hacer clic en el botón de cerrar
   closeModal.addEventListener('click', () => {
     modal.style.display = 'none';
   });
 
+  // Cerrar el modal al hacer clic fuera de él
   window.addEventListener('click', (event) => {
-    if (event.target == modal) {
+    if (event.target === modal) {
       modal.style.display = 'none';
     }
   });
 
+  // Manejar los eventos en los items del carrito (incrementar, decrementar cantidad y eliminar)
   document.getElementById('cart-items').addEventListener('click', (event) => {
     if (event.target.classList.contains('increase-quantity')) {
       const index = event.target.getAttribute('data-index');
       const item = cart[index];
       const inventoryItem = inventory.find(product => product.id === item.id);
 
-    if (inventoryItem && inventoryItem.stock > item.quantity) {
-      cart[index].quantity++;
+      if (inventoryItem && inventoryItem.stock > item.quantity) {
+        cart[index].quantity++;
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCart();
       } else {
@@ -267,85 +270,87 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.getElementById('empty-cart').addEventListener('click', () => {
+  // Vaciar el carrito con confirmación
+  emptyCartButton.addEventListener('click', () => {
     Swal.fire({
-      title: '¿Estás seguro?',
-      text: "Esta acción vaciará todo el carrito.",
+      title: '¿Vaciar carrito?',
+      text: '¿Está seguro de que desea vaciar el carrito?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, vaciar carrito',
+      confirmButtonText: 'Sí, vaciar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
         cart.length = 0;
-        localStorage.removeItem('cart');
+        localStorage.setItem('cart', JSON.stringify(cart));
         updateCart();
-        Swal.fire(
-          'Carrito vaciado',
-          'Tu carrito ha sido vaciado.',
-          'success'
-        )
       }
     });
   });
 
-  // Función para vender un producto y actualizar el inventario
-  const sellProduct = (productId, quantitySold) => {
-    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-    const productIndex = inventory.findIndex(item => item.id === productId);
-
-    if (productIndex !== -1) {
-      inventory[productIndex].stock -= quantitySold; // Reducir el stock vendido
-      localStorage.setItem('inventory', JSON.stringify(inventory));
-
-      // Verificar si el producto se agotó y notificar
-    if (inventory[productIndex].stock === 0) {
-      const productCard = document.querySelector(`.product[data-id="${productId}"]`);
-      if (productCard) {
-        productCard.classList.add('out-of-stock');
-        productCard.querySelector('.add-to-cart').disabled = true;
-        Swal.fire({
-          icon: 'error',
-          title: 'Producto agotado',
-          text: `El producto "${inventory[productIndex].name}" se ha agotado.`
-        });
-      }
-    }
-    }
-  };
-
+  // Realizar el checkout con confirmación
   checkoutButton.addEventListener('click', () => {
-    const sale = {
-      date: new Date().toISOString(),
-      items: [...cart],
-      total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    };
+    if (cart.length > 0) {
+      const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+      Swal.fire({
+        title: 'Confirmar compra',
+        text: `El total es $${totalPrice.toFixed(2)}. ¿Desea confirmar la compra?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, comprar',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const purchaseDetails = cart.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image
+          }));
 
-    sales.push(sale);
-    localStorage.setItem('sales', JSON.stringify(sales));
+          const sale = {
+            date: new Date().toLocaleString(),
+            total: totalPrice,
+            items: purchaseDetails
+          };
 
-    // Vender cada producto del carrito y actualizar el inventario
-    sale.items.forEach(item => {
-      sellProduct(item.id, item.quantity);
-    });
-    
-    localStorage.removeItem('cart');
-    cart.length = 0;
-    updateCart();
-    modal.style.display = 'none';
+          sales.push(sale);
+          localStorage.setItem('sales', JSON.stringify(sales));
 
-    Swal.fire({
-      title: 'Compra guardada',
-      text: 'Su compra se ha guardado con éxito.',
-      icon: 'success',
-      confirmButtonText: 'OK'
-    });
+          purchaseDetails.forEach(purchaseItem => {
+            const inventoryItem = inventory.find(item => item.id === purchaseItem.id);
+            if (inventoryItem) {
+              inventoryItem.stock -= purchaseItem.quantity;
+            }
+          });
+
+          localStorage.setItem('inventory', JSON.stringify(inventory));
+
+          Swal.fire({
+            title: 'Compra exitosa',
+            text: 'Gracias por su compra. La transacción fue exitosa.',
+            icon: 'success'
+          });
+
+          cart.length = 0;
+          localStorage.setItem('cart', JSON.stringify(cart));
+          updateCart();
+          displayMainProducts();
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Carrito vacío',
+        text: 'No hay productos en el carrito para comprar.'
+      });
+    }
   });
 
-  displayMainProducts();
+  // Actualizar el carrito y mostrar los productos principales al cargar la página
   updateCart();
+  displayMainProducts();
 });
 
 
@@ -357,14 +362,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-document.getElementById('generar-reporte').addEventListener('click', function() {
+
+
+document.getElementById('generar-reporte').addEventListener('click', () => {
+  // Obtener los valores de las fechas de inicio y fin
   const fechaInicio = document.getElementById('fecha-inicio').value;
   const fechaFin = document.getElementById('fecha-fin').value;
 
-  // validacion de fechas
+  // Crear objetos de fecha a partir de los valores ingresados
   const fechaInicioObj = new Date(fechaInicio);
   const fechaFinObj = new Date(fechaFin);
 
+  // Validar que ambas fechas hayan sido seleccionadas
   if (!fechaInicio || !fechaFin) {
     Swal.fire({
       icon: 'error',
@@ -374,6 +383,7 @@ document.getElementById('generar-reporte').addEventListener('click', function() 
     return;
   }
 
+  // Validar que la fecha de inicio no sea posterior a la fecha de fin
   if (fechaInicioObj > fechaFinObj) {
     Swal.fire({
       icon: 'error',
@@ -383,15 +393,19 @@ document.getElementById('generar-reporte').addEventListener('click', function() 
     return;
   }
 
+  // Generar el reporte con las fechas válidas
   generarReporte(fechaInicio, fechaFin);
 });
 
-const rowsPerPage = 6;
-let currentPage = 1;
-let currentRows = [];
+const rowsPerPage = 6; // Número de filas por página
+let currentPage = 1; // Página actual para la paginación
+let currentRows = []; // Filas actuales para el reporte
 
 function generarReporte(fechaInicio, fechaFin) {
+  // Obtener las ventas del localStorage
   const sales = JSON.parse(localStorage.getItem('sales')) || [];
+  
+  // Filtrar las ventas dentro del rango de fechas seleccionado
   const filteredSales = sales.filter(sale => {
     const saleDate = new Date(sale.date);
     const inicio = new Date(fechaInicio);
@@ -403,16 +417,18 @@ function generarReporte(fechaInicio, fechaFin) {
     return saleDate >= inicio && saleDate <= fin;
   });
 
+  // Mostrar mensaje si no se encuentran ventas en el rango de fechas
   if (filteredSales.length === 0) {
     document.querySelector('#reporte-tabla tbody').innerHTML = '<tr><td colspan="5">No se encontraron resultados.</td></tr>';
     document.getElementById('total-ventas').innerHTML = '';
-		document.getElementById('pagination').innerHTML = '';
+    document.getElementById('pagination').innerHTML = '';
     return;
   }
 
   let totalVentas = 0;
   const rows = [];
 
+  // Crear las filas de la tabla con las ventas filtradas
   filteredSales.forEach(sale => {
     sale.items.forEach(item => {
       const total = item.price * item.quantity;
@@ -428,18 +444,19 @@ function generarReporte(fechaInicio, fechaFin) {
     });
   });
 
-	currentRows = rows;
-  currentPage = 1; // Reset to first page when new report is generated
-  renderTable();
-  renderPagination();
+  currentRows = rows; // Guardar las filas actuales
+  currentPage = 1; // Resetear a la primera página al generar un nuevo reporte
+  renderTable(); // Renderizar la tabla
+  renderPagination(); // Renderizar la paginación
 
-  const totalVentasDiv = document.getElementById('total-ventas');
-  totalVentasDiv.innerHTML = `<strong>Total Ventas: $${totalVentas.toFixed(2)}</strong>`;
+  // Mostrar el total de ventas
+  document.getElementById('total-ventas').innerHTML = `<strong>Total Ventas: $${totalVentas.toFixed(2)}</strong>`;
 
+  // Generar el PDF del reporte
   generarPDF(fechaInicio, fechaFin, totalVentas);
 }
 
-function renderTable(rows) {
+function renderTable() {
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const paginatedRows = currentRows.slice(startIndex, endIndex).join('');
@@ -452,9 +469,10 @@ function renderPagination() {
   const pagination = document.getElementById('pagination');
   pagination.innerHTML = '';
 
+  // Crear botón de página anterior
   const prevButton = document.createElement('li');
   prevButton.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-  prevButton.innerHTML = `<a class="page-link" href="#">Ant.</a>`;
+  prevButton.innerHTML = '<a class="page-link" href="#">Ant.</a>';
   prevButton.addEventListener('click', () => {
     if (currentPage > 1) {
       currentPage--;
@@ -464,6 +482,7 @@ function renderPagination() {
   });
   pagination.appendChild(prevButton);
 
+  // Crear botones para cada página
   for (let i = 1; i <= pageCount; i++) {
     const pageItem = document.createElement('li');
     pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
@@ -476,9 +495,10 @@ function renderPagination() {
     pagination.appendChild(pageItem);
   }
 
+  // Crear botón de página siguiente
   const nextButton = document.createElement('li');
   nextButton.className = `page-item ${currentPage === pageCount ? 'disabled' : ''}`;
-  nextButton.innerHTML = `<a class="page-link" href="#">Sig.</a>`;
+  nextButton.innerHTML = '<a class="page-link" href="#">Sig.</a>';
   nextButton.addEventListener('click', () => {
     if (currentPage < pageCount) {
       currentPage++;
@@ -497,17 +517,17 @@ function generarPDF(fechaInicio, fechaFin, totalVentas) {
     format: [80, 297]
   });
 
+  // Formatear las fechas para el encabezado del PDF
   const fechaInicioFormatted = new Date(fechaInicio).toLocaleDateString();
   const fechaFinFormatted = new Date(fechaFin).toLocaleDateString();
 
-  // Encabezado
+  // Agregar título y rango de fechas al PDF
   doc.setFontSize(18);
   doc.text('Reporte de Ventas', 40, 10, null, null, 'center');
   doc.setFontSize(12);
   doc.text(`Desde: ${fechaInicioFormatted}  Hasta: ${fechaFinFormatted}`, 40, 20, null, null, 'center');
-  
 
-  // Crear una tabla temporal para convertirla en una imagen
+  // Crear una tabla temporal para convertir a imagen
   const tempTable = document.createElement('table');
   tempTable.innerHTML = `
     <thead>
@@ -520,7 +540,7 @@ function generarPDF(fechaInicio, fechaFin, totalVentas) {
     </thead>
     <tbody>
       ${currentRows.join('')}
-       <tr>
+      <tr>
         <td colspan="3" style="text-align: left;"><strong>Total Ventas:</strong></td>
         <td><strong>$${totalVentas.toFixed(2)}</strong></td>
       </tr>
@@ -529,9 +549,10 @@ function generarPDF(fechaInicio, fechaFin, totalVentas) {
   tempTable.style.borderCollapse = 'collapse';
   tempTable.style.width = '100%';
   tempTable.style.fontSize = '12px';
-  tempTable.style.position = 'absolute'; // Asegura que la tabla no sea visible
-  tempTable.style.left = '-9999px'; // Asegura que la tabla no sea visible
+  tempTable.style.position = 'absolute';
+  tempTable.style.left = '-9999px';
 
+  // Estilos CSS para la tabla
   const style = document.createElement('style');
   style.innerHTML = `
     table, th, td {
@@ -549,42 +570,31 @@ function generarPDF(fechaInicio, fechaFin, totalVentas) {
 
   document.head.appendChild(style);
   document.body.appendChild(tempTable);
-  
 
-    html2canvas(tempTable).then(canvas => {
-      var imgData = canvas.toDataURL('image/png');
-      var imgWidth = 70; // Ancho de la imagen en mm (ajusta según sea necesario)
-      var pageHeight = 297;  // Altura de la página en mm (ajusta según sea necesario)
-      var imgHeight = canvas.height * imgWidth / canvas.width;
+  // Convertir la tabla a una imagen y agregarla al PDF
+  html2canvas(tempTable).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const imgWidth = 70;
+    const pageHeight = 297;
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+    const centerX = (doc.internal.pageSize.width - imgWidth) / 2;
+    const position = 30;
 
-      // Calcular la posición horizontal para centrar la imagen
-      var centerX = (doc.internal.pageSize.width - imgWidth) / 2;
-      var position = 30;
+    doc.addImage(imgData, 'PNG', centerX, position, imgWidth, imgHeight);
 
-      doc.addImage(imgData, 'PNG', centerX, position, imgWidth, imgHeight);
+    document.body.removeChild(tempTable);
+    document.head.removeChild(style);
 
-      // Remover la tabla temporal
-      document.body.removeChild(tempTable);
-      document.head.removeChild(style);
+    const pdfName = `reporte_${Date.now()}.pdf`;
 
-      // Generar nombre único para el PDF
-       const pdfName = `reporte_${Date.now()}.pdf`;
-
-       // Visualizar el PDF antes de descargar
+    // Crear un enlace para descargar el PDF
     const blob = doc.output('blob');
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.setAttribute('download', pdfName); 
-
-
     link.click();
 
-      // Pie de página
-      //doc.setFontSize(14);
-      //doc.text(`Total Ventas: $${totalVentas.toFixed(2)}`, 40, doc.internal.pageSize.height - 20, null, null, 'center');
-
-      // Limpiar recursos después de visualizar
     URL.revokeObjectURL(url);
-    });
-  }
+  });
+}

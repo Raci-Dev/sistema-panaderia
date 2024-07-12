@@ -1,4 +1,4 @@
-/* styles.css */
+/* General Styles */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
@@ -10,6 +10,9 @@ header {
   background-color: #E15002;
   color: white;
   text-align: center;
+}
+
+header {
   padding: 2.5em 0;
   position: relative;
 }
@@ -46,6 +49,7 @@ nav a {
   right: -14px;
 }
 
+/* Main and Section Styles */
 main {
   display: flex;
   flex-direction: column;
@@ -62,6 +66,7 @@ section {
   max-width: 600px;
 }
 
+/* Product Styles */
 #products {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -71,13 +76,13 @@ section {
 
 .product {
   display: flex;
+  flex-direction: column;
   text-align: center;
   background: #fff;
   border-radius: 8px;
   border: 2px solid #ccc;
   padding: 15px;
-  flex-direction: column;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Agrega el box-shadow */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .product img {
@@ -88,56 +93,59 @@ section {
   margin-bottom: 10px;
 }
 
-.product h3 {
+.product h3, .product p {
   margin: 10px 0 5px 0;
 }
 
-.product p {
-  margin: 0 0 15px 0;
-}
-
-.add-to-cart {
+/* Button Styles */
+button {
   background-color: #E15002;
   color: white;
   border: none;
   padding: 10px 15px;
-  width: 100%;
   cursor: pointer;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background-color: #c5642f;
 }
 
 .add-to-cart i {
   margin-right: 5px;
 }
 
-.add-to-cart:hover {
-  background-color: #c5642f;
+.cart-item-quantity button, #checkout, #empty-cart {
+  background-color: #007bff;
 }
 
-/* Spinner styles */
-.spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-left-color: #fff;
-  border-radius: 50%;
-  width: 10px;
-  height: 10px;
-  animation: spin 1s linear infinite;
-  display: inline-block;
-  vertical-align: middle;
+.cart-item-quantity button:hover, #checkout:hover {
+  background-color: #0056b3;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+#empty-cart {
+  background-color: #dc3545;
 }
 
+#empty-cart:hover {
+  background-color: #bd2130;
+}
+
+#checkout, #empty-cart {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Cart Styles */
 #cart-items {
   list-style-type: none;
   padding: 0;
@@ -158,57 +166,19 @@ section {
   border-radius: 4px;
 }
 
-button:disabled {
-  background-color: #007bff; /* Mismo color de fondo que los botones habilitados */
-  opacity: 0.5; /* Hacer el botón más opaco */
-  cursor: not-allowed; /* Cambiar el cursor para indicar que está deshabilitado */
-}
-
-#total-price-container {
-  margin-top: 20px;
-  text-align: end;
-  font-size: 22px;
-  font-weight: bold;
-  background-color: rgba(255, 255, 255, 0.1); /* Fondo más opaco */;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-}
-
-.cart-item-quantity button {
-  background-color: #007bff;
-  border: none;
-  color: white;
-  padding: 5px 10px;
-  font-size: 16px;
-  margin: 0 5px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
 .cart-item-details {
   flex-grow: 1;
-  white-space: nowrap;         /* Evita que el texto se envuelva */
-  overflow: hidden;            /* Oculta el texto que no cabe */
-  text-overflow: ellipsis;     /* Añade los puntos suspensivos */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.cart-item-quantity button:hover {
-  background-color: #0056b3;
-}
-
-
-#cart-items .cart-item-details {
-  flex-grow: 1;
-}
-
-#cart-items .cart-item-quantity {
+.cart-item-quantity {
   display: flex;
   align-items: center;
 }
 
-#cart-items .cart-item-quantity input {
+.cart-item-quantity input {
   width: 40px;
   text-align: center;
   border: 1px solid #ccc;
@@ -217,48 +187,29 @@ button:disabled {
   margin: 0 5px;
 }
 
-#cart-items .remove-item {
+.remove-item {
   background-color: #dc3545;
   border: none;
   color: #fff;
   padding: 5px 10px;
   margin-left: 10px;
   border-radius: 5px;
-  cursor: pointer;
   font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-#cart-items .remove-item:hover {
-  color: #bd2130;
-}
-
-#checkout,  #empty-cart {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  cursor: pointer;
-  border-radius: 4px;
-  width: 100%;
-  margin-top: 10px;
-}
-
-#empty-cart {
-  background-color: #dc3545;
-}
-
-#checkout:hover {
-  background-color: #0056b3;
-}
-
-#empty-cart:hover {
+.remove-item:hover {
   background-color: #bd2130;
 }
 
-#checkout, #empty-cart {
-  display: inline-block;
+#total-price-container {
+  margin-top: 20px;
+  text-align: end;
+  font-size: 22px;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
 }
 
 #cart-empty-message {
@@ -268,7 +219,28 @@ button:disabled {
   margin-top: 20px;
 }
 
-/* Estilos del modal */
+/* Spinner Styles */
+.spinner, .circle {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #fff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Modal Styles */
 .modal {
   display: none;
   position: fixed;
@@ -304,21 +276,6 @@ button:disabled {
 .close:focus {
   color: black;
   text-decoration: none;
-  cursor: pointer;
-}
-
-footer {
-  background-color: #E15002;
-  color: white; /* Color de texto */
-  text-align: center;
-  padding: 10px;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
-
-footer p {
-  margin: 0;
 }
 
 /* Splash Screen Styles */
@@ -344,31 +301,4 @@ footer p {
 .splash-content h1 {
   font-size: 3em;
   margin-bottom: 20px;
-}
-
-.circle {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid #ffffff;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-
-
-
-
-
-
-.message-container {
-  align-items: center;
-  padding: 50px;
 }

@@ -76,8 +76,7 @@ main {
 
 .form-container label {
   flex: 1 1 100%;
-  margin-bottom: 5px;
-  color: #232628;
+  font-size: small;
 }
 
 .form-container input, 
@@ -85,7 +84,7 @@ main {
   flex: 1 1 calc(33.333% - 10px);
   padding: 10px;
   margin-bottom: 10px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: bold;
   color: #232628;
 }
@@ -275,34 +274,3 @@ footer {
   margin: 0 auto;
 }
 
-/* Responsive styles */
-@media (min-width: 400px) {
-  .form-container label, 
-  .form-container input, 
-  .form-container button {
-    width: 100%;
-  }
-}
-
-@media (min-width: 700px) {
-  .form-container label, 
-  .form-container input {
-    width: 48%;
-  }
-  .form-container button {
-    width: 100%;
-  }
-}
-
-@media (min-width: 900px) {
-  .form-container button {
-    width: 30%;
-    align-self: center;
-  }
-}
-
-@media (min-width: 1200px) {
-  .table-container {
-    max-width: 1200px;
-  }
-}
