@@ -11,7 +11,6 @@ function hideSplashScreen() {
 
   setTimeout(() => {
     splashScreen.style.display = 'none'; // Ocultar el splash screen después de la transición
-    displayMainProducts();
   }, 5000); // Tiempo coincidente con la transición en CSS
 }
 
@@ -288,69 +287,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Función para vender un producto y actualizar el inventario
+  const sellProduct = (productId, quantitySold) => {
+    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+    const productIndex = inventory.findIndex(item => item.id === productId);
+
+    if (productIndex !== -1) {
+      inventory[productIndex].stock -= quantitySold; // Reducir el stock vendido
+      localStorage.setItem('inventory', JSON.stringify(inventory));
+    }
+  };
+
   // Realizar el checkout con confirmación
   checkoutButton.addEventListener('click', () => {
-    if (cart.length > 0) {
-      const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-      Swal.fire({
-        title: 'Confirmar compra',
-        text: `El total es $${totalPrice.toFixed(2)}. ¿Desea confirmar la compra?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, comprar',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const purchaseDetails = cart.map(item => ({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            image: item.image
-          }));
+    const sale = {
+      date: new Date().toISOString(),
+      items: [...cart],
+      total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    };
 
-          const sale = {
-            date: new Date().toLocaleString(),
-            total: totalPrice,
-            items: purchaseDetails
-          };
+    sales.push(sale);
+    localStorage.setItem('sales', JSON.stringify(sales));
 
-          sales.push(sale);
-          localStorage.setItem('sales', JSON.stringify(sales));
+    // Vender cada producto del carrito y actualizar el inventario
+    sale.items.forEach(item => {
+      sellProduct(item.id, item.quantity);
+    });
 
-          purchaseDetails.forEach(purchaseItem => {
-            const inventoryItem = inventory.find(item => item.id === purchaseItem.id);
-            if (inventoryItem) {
-              inventoryItem.stock -= purchaseItem.quantity;
-            }
-          });
+    localStorage.removeItem('cart');
+    cart.length = 0;
+    updateCart();
+    modal.style.display = 'none';
 
-          localStorage.setItem('inventory', JSON.stringify(inventory));
-
-          Swal.fire({
-            title: 'Compra exitosa',
-            text: 'Gracias por su compra. La transacción fue exitosa.',
-            icon: 'success'
-          });
-
-          cart.length = 0;
-          localStorage.setItem('cart', JSON.stringify(cart));
-          updateCart();
-          displayMainProducts();
-        }
-      });
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Carrito vacío',
-        text: 'No hay productos en el carrito para comprar.'
-      });
-    }
+    Swal.fire({
+      title: 'Compra guardada',
+      text: 'Su compra se ha guardado con éxito.',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    });
   });
 
   // Actualizar el carrito y mostrar los productos principales al cargar la página
-  updateCart();
   displayMainProducts();
+  updateCart();
 });
 
 
@@ -397,7 +376,7 @@ document.getElementById('generar-reporte').addEventListener('click', () => {
   generarReporte(fechaInicio, fechaFin);
 });
 
-const rowsPerPage = 6; // Número de filas por página
+const rowsPerPage = 10; // Número de filas por página
 let currentPage = 1; // Página actual para la paginación
 let currentRows = []; // Filas actuales para el reporte
 
@@ -450,7 +429,8 @@ function generarReporte(fechaInicio, fechaFin) {
   renderPagination(); // Renderizar la paginación
 
   // Mostrar el total de ventas
-  document.getElementById('total-ventas').innerHTML = `<strong>Total Ventas: $${totalVentas.toFixed(2)}</strong>`;
+  const totalVentasDiv = document.getElementById('total-ventas');
+  totalVentasDiv.innerHTML = `<strong>Total Ventas: $${totalVentas.toFixed(2)}</strong>`;
 
   // Generar el PDF del reporte
   generarPDF(fechaInicio, fechaFin, totalVentas);
@@ -465,48 +445,33 @@ function renderTable() {
 }
 
 function renderPagination() {
-  const pageCount = Math.ceil(currentRows.length / rowsPerPage);
-  const pagination = document.getElementById('pagination');
-  pagination.innerHTML = '';
+  const totalPages = Math.ceil(currentRows.length / rowsPerPage);
+  const paginationContainer = document.getElementById('pagination');
 
-  // Crear botón de página anterior
-  const prevButton = document.createElement('li');
-  prevButton.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-  prevButton.innerHTML = '<a class="page-link" href="#">Ant.</a>';
-  prevButton.addEventListener('click', () => {
-    if (currentPage > 1) {
-      currentPage--;
-      renderTable();
-      renderPagination();
-    }
-  });
-  pagination.appendChild(prevButton);
+  let paginationHTML = '';
 
-  // Crear botones para cada página
-  for (let i = 1; i <= pageCount; i++) {
-    const pageItem = document.createElement('li');
-    pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
-    pageItem.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-    pageItem.addEventListener('click', () => {
-      currentPage = i;
-      renderTable();
-      renderPagination();
-    });
-    pagination.appendChild(pageItem);
+  // Botón de página anterior
+  if (currentPage > 1) {
+    paginationHTML += `<button onclick="changePage(${currentPage - 1})">&laquo; Anterior</button>`;
   }
 
-  // Crear botón de página siguiente
-  const nextButton = document.createElement('li');
-  nextButton.className = `page-item ${currentPage === pageCount ? 'disabled' : ''}`;
-  nextButton.innerHTML = '<a class="page-link" href="#">Sig.</a>';
-  nextButton.addEventListener('click', () => {
-    if (currentPage < pageCount) {
-      currentPage++;
-      renderTable();
-      renderPagination();
-    }
-  });
-  pagination.appendChild(nextButton);
+  // Botones de número de página
+  for (let i = 1; i <= totalPages; i++) {
+    paginationHTML += `<button onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+  }
+
+  // Botón de página siguiente
+  if (currentPage < totalPages) {
+    paginationHTML += `<button onclick="changePage(${currentPage + 1})">Siguiente &raquo;</button>`;
+  }
+
+  paginationContainer.innerHTML = paginationHTML;
+}
+
+function changePage(page) {
+  currentPage = page;
+  renderTable();
+  renderPagination();
 }
 
 function generarPDF(fechaInicio, fechaFin, totalVentas) {

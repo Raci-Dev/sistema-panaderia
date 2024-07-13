@@ -71,7 +71,7 @@ main {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
 }
 
 .form-container label {
@@ -87,6 +87,7 @@ main {
   border-radius: 6px;
   font-weight: bold;
   color: #232628;
+  border: 2px solid #ccc;
 }
 
 .form-container button {
@@ -98,6 +99,13 @@ main {
   font-weight: bold;
   font-size: 15px;
 }
+
+.form-container input:focus,
+.form-container button:focus {
+  border-color: #E15002; /* Cambia el color del borde a naranja cuando el input o botón está activo */
+  outline: 0; /* Elimina el contorno predeterminado en algunos navegadores */
+}
+
 
 .form-container button:hover {
   background-color: #c5642f;
@@ -126,7 +134,6 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #fff;
   width: 100%;
   min-height: 300px;
   position: relative;
@@ -158,56 +165,13 @@ main {
   white-space: nowrap; /* Prevents text from wrapping */
 }
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  list-style: none;
-  bottom: 20px;
-  left: 0;
-  width: 100%;
-}
-
-.page-item {
-  margin: 0 2px;
-}
-
-.page-item .page-link {
-  position: relative;
-  display: block;
-  padding: 0.5rem 0.75rem;
-  margin-left: -1px;
-  line-height: 1.25;
-  color: #adb5bd;
-  background-color: #fff;
-  text-decoration: none;
-}
-
-.page-item.disabled .page-link {
-  color: #6c757d;
-  pointer-events: none;
-  background-color: #fff;
-}
-
-.page-item.active .page-link {
-  z-index: 1;
-  color: #fff;
-  background-color: #E15002;
-  border-color: #E15002;
-}
-
-.page-item .page-link:hover {
-  color: #fff;
-  background-color: #c5642f;
-  border-color: #E15002;
-}
-
 #total-ventas {
   text-align: center;
   font-size: 1.2em;
-  margin-top: 20px;
-  color: #fff;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  color: #232628;
 }
 
 
@@ -261,16 +225,29 @@ main {
   }
 }
 
-/* Footer styles */
-footer {
-  background-color: #E15002;
-  color: white;
-  text-align: center;
-  padding: 10px 20px;
+/* Estilos para la paginación */
+#pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 
-.footer-container {
-  max-width: 1200px;
-  margin: 0 auto;
+#pagination button {
+  background-color: #E15002; /* Color de fondo */
+  color: white; /* Color del texto */
+  border: none; /* Sin borde */
+  padding: 10px 20px; /* Espaciado interno */
+  margin: 0 5px; /* Espaciado externo */
+  cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+  border-radius: 5px; /* Esquinas redondeadas */
+  transition: background-color 0.3s; /* Transición suave para el cambio de color */
 }
 
+#pagination button:hover {
+  background-color: #c5642f; /* Color de fondo al pasar sobre el botón */
+}
+
+#pagination button.active {
+  background-color: #c5642f; /* Color de fondo para el botón activo */
+  font-weight: bold; /* Texto en negrita para el botón activo */
+}

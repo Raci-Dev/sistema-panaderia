@@ -102,6 +102,42 @@ main {
   background-color: #ed7a3c;
 }
 
+.input-field[type="file"] {
+  width: 100%;
+  padding: 5px;
+  font-size: 1rem;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  color: #333;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.input-field[type="file"]:focus {
+  border-color: #E15002;
+  outline: 0;
+}
+
+.input-field[type="file"]::before {
+  content: 'Seleccionar imagen'; /* Cambia el texto aquí */
+  display: inline-block;
+  background-color: #E15002;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.input-field[type="file"]:hover::before {
+  background-color: #ed7a3c;
+}
+
+.input-field[type="file"]::-webkit-file-upload-button {
+  visibility: hidden; /* Oculta el botón de carga de archivo original */
+}
+
+
 .table-container {
   max-width: 100%;
   overflow-x: auto; /* Permite el desplazamiento horizontal en pantallas pequeñas */
@@ -180,4 +216,28 @@ main {
 /* Estilos para los íconos dentro de los botones */
 .action-button i {
   margin-right: 5px; /* Espacio a la derecha del ícono */
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination-controls button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: none;
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.pagination-controls button.active {
+  background-color: #E15002;
+  color: white;
+}
+
+.pagination-controls button:disabled {
+  cursor: not-allowed;
+  background-color: #e9ecef;
 }

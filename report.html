@@ -40,6 +40,9 @@
       <input type="date" id="fecha-fin" name="fecha-fin" required>
       <button type="button" id="generar-reporte">Generar Reporte</button>
     </form>
+    <div id="total-ventas">
+      <!-- Aquí se mostrará el total global de ventas -->
+    </div>
     <div id="reporte-grid" class="grid table-container">
       <table id="reporte-tabla" class="reporte-tabla">
         <thead>
@@ -52,15 +55,9 @@
         </thead>
       <tbody></tbody>
     </table>
-    <nav aria-label="page navigation">
-      <ul class="pagination" id="pagination">
-        <!-- paginación dinamica aqui -->
-      </ul>
-    </nav>
   </div>
-    <div id="total-ventas">
-      <!-- Aquí se mostrará el total global de ventas -->
-    </div>
+
+  <div id="pagination"></div>
   </div>
 </main>
   
