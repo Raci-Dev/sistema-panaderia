@@ -195,7 +195,7 @@ main {
   background-color: transparent;
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 20px;
   transition: color 0.3s ease;
 }
 
@@ -215,7 +215,7 @@ main {
 
 /* Estilos para los íconos dentro de los botones */
 .action-button i {
-  margin-right: 5px; /* Espacio a la derecha del ícono */
+  margin-right: 10px; /* Espacio a la derecha del ícono */
 }
 
 .pagination-controls {

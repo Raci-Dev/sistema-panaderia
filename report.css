@@ -156,13 +156,21 @@ main {
 }
 
 .reporte-tabla th {
-  background-color: #f2f2f2;
+  background-color: #fff;
 }
 
 .reporte-tabla td {
   overflow: hidden; /* Ensures the text-overflow works */
   text-overflow: ellipsis; /* Adds ellipsis for long text */ /* Adjust as needed */
   white-space: nowrap; /* Prevents text from wrapping */
+}
+
+.reporte-tabla tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.reporte-tabla tbody tr:hover {
+  background-color: #f1f1f1;
 }
 
 #total-ventas {
@@ -250,4 +258,29 @@ main {
 #pagination button.active {
   background-color: #c5642f; /* Color de fondo para el botón activo */
   font-weight: bold; /* Texto en negrita para el botón activo */
+}
+
+/* Media queries para tamaños específicos de pantalla */
+@media (max-width: 300px) {
+  #pagination button {
+    font-size: 12px; /* Tamaño de fuente más pequeño */
+    padding: 8px 16px; /* Espaciado interno reducido */
+    margin: 0 3px; /* Espaciado externo reducido */
+  }
+}
+
+@media (min-width: 301px) and (max-width: 400px) {
+  #pagination button {
+    font-size: 14px; /* Tamaño de fuente ajustado */
+    padding: 8px 16px; /* Espaciado interno reducido */
+    margin: 0 4px; /* Espaciado externo reducido */
+  }
+}
+
+@media (min-width: 401px) and (max-width: 700px) {
+  #pagination button {
+    font-size: 16px; /* Tamaño de fuente más grande */
+    padding: 10px 20px; /* Espaciado interno estándar */
+    margin: 0 5px; /* Espaciado externo estándar */
+  }
 }

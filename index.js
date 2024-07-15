@@ -1,17 +1,20 @@
 window.addEventListener('load', () => {
   // Mostrar el splash screen al cargar la página
-  document.getElementById('splash-screen').style.display = 'flex';
+  const splashScreen = document.getElementById('splash-screen');
+  splashScreen.style.display = 'flex';
   hideSplashScreen();
 });
 
 // Función para ocultar el splash screen después de 5 segundos
 function hideSplashScreen() {
   const splashScreen = document.getElementById('splash-screen');
-  splashScreen.style.opacity = '0'; // Aplicar transición para desvanecer el splash screen
+  setTimeout(() => {
+    splashScreen.classList.add('hidden') // Aplicar transición para desvanecer el splash screen
 
   setTimeout(() => {
     splashScreen.style.display = 'none'; // Ocultar el splash screen después de la transición
-  }, 5000); // Tiempo coincidente con la transición en CSS
+  }, 1000); // Tiempo coincidente con la transición en CSS
+}, 3000);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -216,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         });
       }
-    }, 1000); // Espera el mismo tiempo que el splash screen para mostrar la alerta
+    }, 4000); // Espera el mismo tiempo que el splash screen para mostrar la alerta
   }
 
   // Mostrar el modal del carrito al hacer clic en el icono del carrito
@@ -300,6 +303,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Realizar el checkout con confirmación
   checkoutButton.addEventListener('click', () => {
+    $('body').waitMe({
+      effect: 'bounce',
+      bg: 'rgba(255,255,255,0.7)',
+      color: '#000'
+    });
+
     const sale = {
       date: new Date().toISOString(),
       items: [...cart],
@@ -319,17 +328,51 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCart();
     modal.style.display = 'none';
 
-    Swal.fire({
+    // Simular un retraso para mostrar el efecto de "procesando"
+    setTimeout(() => {
+      $('body').waitMe('hide');
+      Swal.fire({
       title: 'Compra guardada',
       text: 'Su compra se ha guardado con éxito.',
       icon: 'success',
-      confirmButtonText: 'OK'
+      confirmButtonText: 'OK',
+      allowOutsideClick: true // Permitir clics fuera del modal
+    }).then((result) => {
+      if (result.isConfirmed) {
+        checkStockAndUpdateUI();
+      }
     });
+  
+  // Añadir event listener al documento para cualquier clic
+  document.addEventListener('click', function handler(event) {
+    if (!event.target.closest('.swal2-popup')) {
+      checkStockAndUpdateUI();
+      document.removeEventListener('click', handler); // Remover el event listener después de ejecutarse una vez
+    }
   });
+}, 3000);
+});
+
+// Función para verificar el stock y actualizar la interfaz
+function checkStockAndUpdateUI() {
+  let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
+  inventory.forEach(product => {
+    const productDiv = document.querySelector(`[data-id="${product.id}"]`);
+    if (productDiv) {
+      // Verificar si el producto está agotado
+      if (product.stock <= 0) {
+        productDiv.classList.add('out-of-stock');
+        productDiv.querySelector('.add-to-cart').disabled = true;
+      }
+    }
+  });
+}
 
   // Actualizar el carrito y mostrar los productos principales al cargar la página
-  displayMainProducts();
   updateCart();
+  displayMainProducts();
+
 });
 
 
@@ -482,84 +525,109 @@ function generarPDF(fechaInicio, fechaFin, totalVentas) {
     format: [80, 297]
   });
 
+  // Información del negocio
+  const negocioInfo = {
+    logo: 'https://imgs.search.brave.com/eO_0__Da2vAhm2z5FZ8Uy2cTB6h_MjJFyhVM5RzsVoU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMudmV4ZWxzLmNv/bS9tZWRpYS91c2Vy/cy8zLzEyOTk1NC9p/c29sYXRlZC9wcmV2/aWV3L2FiYTAyMDcy/NmZjYTY0NjU1YmZl/MzY1NTBiNzE2Zjc4/LWljb25vLWRlLXRh/emEtZGUtaGVsYWRv/LnBuZw', // Reemplaza con la URL del logo
+    nombre: 'Panaderia "El Panadero"',
+    ubicacion: 'En algun lindo lugar',
+    telefono: '400 000 00 00'
+  };
+
   // Formatear las fechas para el encabezado del PDF
   const fechaInicioFormatted = new Date(fechaInicio).toLocaleDateString();
   const fechaFinFormatted = new Date(fechaFin).toLocaleDateString();
 
-  // Agregar título y rango de fechas al PDF
-  doc.setFontSize(18);
-  doc.text('Reporte de Ventas', 40, 10, null, null, 'center');
-  doc.setFontSize(12);
-  doc.text(`Desde: ${fechaInicioFormatted}  Hasta: ${fechaFinFormatted}`, 40, 20, null, null, 'center');
+  // Agregar logo del negocio
+  const img = new Image();
+  img.src = negocioInfo.logo;
+  img.onload = function () {
+    const imgWidth = 15; // Ancho del logo en mm
+    const imgHeight = img.height * imgWidth / img.width; // Mantener la proporción del logo
+    const margin = 10; // Margen para el logo y la información
+    const infoX = margin + imgWidth + 5; // Separación entre el logo y la información del negocio
 
-  // Crear una tabla temporal para convertir a imagen
-  const tempTable = document.createElement('table');
-  tempTable.innerHTML = `
-    <thead>
-      <tr>
-        <th>Fecha</th>
-        <th>Producto</th>
-        <th>Cantidad</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${currentRows.join('')}
-      <tr>
-        <td colspan="3" style="text-align: left;"><strong>Total Ventas:</strong></td>
-        <td><strong>$${totalVentas.toFixed(2)}</strong></td>
-      </tr>
-    </tbody>
-  `;
-  tempTable.style.borderCollapse = 'collapse';
-  tempTable.style.width = '100%';
-  tempTable.style.fontSize = '12px';
-  tempTable.style.position = 'absolute';
-  tempTable.style.left = '-9999px';
+    doc.addImage(img, 'PNG', 80 - imgWidth - margin, margin, imgWidth, imgHeight, '', 'FAST'); // Esquina derecha superior con margen
 
-  // Estilos CSS para la tabla
-  const style = document.createElement('style');
-  style.innerHTML = `
-    table, th, td {
-      border: 1px solid #fff;
-      padding: 8px;
-      text-align: center;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-    td:nth-child(3), td:nth-child(4) {
-      width: 50px;
-    }
-  `;
+    // Agregar información del negocio
+    doc.setFontSize(10);
+    doc.setFont('Courier'); // Usar una fuente similar a la de los tickets
+    doc.text(negocioInfo.nombre, margin, margin + 10);
+    doc.text(negocioInfo.ubicacion, margin, margin + 15);
+    doc.text(negocioInfo.telefono, margin, margin + 20);
 
-  document.head.appendChild(style);
-  document.body.appendChild(tempTable);
+    // Agregar título y rango de fechas al PDF
+    doc.setFontSize(12);
+    doc.text('Reporte de Ventas', 40, margin + imgHeight + 25, null, null, 'center');
+    doc.setFontSize(10);
+    doc.text(`Desde: ${fechaInicioFormatted}  Hasta: ${fechaFinFormatted}`, 40, margin + imgHeight + 30, null, null, 'center');
 
-  // Convertir la tabla a una imagen y agregarla al PDF
-  html2canvas(tempTable).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const imgWidth = 70;
-    const pageHeight = 297;
-    const imgHeight = canvas.height * imgWidth / canvas.width;
-    const centerX = (doc.internal.pageSize.width - imgWidth) / 2;
-    const position = 30;
+    // Crear una tabla temporal para convertir a imagen
+    const tempTable = document.createElement('table');
+    tempTable.innerHTML = `
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${currentRows.join('')}
+        <tr>
+          <td colspan="3" style="text-align: left;"><strong>Total Ventas:</strong></td>
+          <td><strong>$${totalVentas.toFixed(2)}</strong></td>
+        </tr>
+      </tbody>
+    `;
+    tempTable.style.borderCollapse = 'collapse';
+    tempTable.style.width = '100%';
+    tempTable.style.fontSize = '10px';
+    tempTable.style.position = 'absolute';
+    tempTable.style.left = '-9999px';
 
-    doc.addImage(imgData, 'PNG', centerX, position, imgWidth, imgHeight);
+    // Estilos CSS para la tabla
+    const style = document.createElement('style');
+    style.innerHTML = `
+      table, th, td {
+        border: 1px solid #000;
+        padding: 5px;
+        text-align: center;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      td:nth-child(3), td:nth-child(4) {
+        width: 50px;
+      }
+    `;
 
-    document.body.removeChild(tempTable);
-    document.head.removeChild(style);
+    document.head.appendChild(style);
+    document.body.appendChild(tempTable);
 
-    const pdfName = `reporte_${Date.now()}.pdf`;
+    // Convertir la tabla a una imagen y agregarla al PDF
+    html2canvas(tempTable).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = 70;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      const position = margin + imgHeight + 35;
 
-    // Crear un enlace para descargar el PDF
-    const blob = doc.output('blob');
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', pdfName); 
-    link.click();
+      doc.addImage(imgData, 'PNG', 5, margin + imgHeight + 35, imgWidth, imgHeight);
 
-    URL.revokeObjectURL(url);
-  });
+      document.body.removeChild(tempTable);
+      document.head.removeChild(style);
+
+      const pdfName = `reporte_${Date.now()}.pdf`;
+
+      // Crear un enlace para descargar el PDF
+      const blob = doc.output('blob');
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', pdfName); 
+      link.click();
+
+      URL.revokeObjectURL(url);
+    });
+  };
 }
