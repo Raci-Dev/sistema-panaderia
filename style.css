@@ -83,16 +83,21 @@ section {
   border: 2px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  height: 300px;
 }
 
 .product img {
   width: 100%;
-  height: 200px;
+  height: 150px;
   object-fit: cover;
 }
 
 .product-info {
   padding: 15px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .product h3, .product p {
