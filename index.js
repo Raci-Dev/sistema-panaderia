@@ -116,9 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
           productDiv.innerHTML = `
             <img src="${product.image}" alt="${product.name}">
+            <div class="product-info">
             <h3>${product.name}</h3>
             <p>$${product.price.toFixed(2)}</p>
-            <button class="add-to-cart"><i class="fas fa-cart-plus"></i> Agregar <div class="spinner" style="display: none;"></div></button>
+            <button class="add-to-cart"><i class="fas fa-cart-plus"></i> Agregar</button>
+            </div>
           `;
 
           // Verificar si el producto está agotado
